@@ -1,0 +1,243 @@
+// Self-hosted Nexus lexer (bootstrap subset).
+// Emits token hashes: {"kind": "...", "lit": "..."}.
+// Host provides: len, slice, push, contains, puts (for debug).
+
+let DIGITS = "0123456789";
+let LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
+let IDENT_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
+let WS = " \t\r\n";
+
+let keyword_kind = fn(ident) {
+  if (ident == "let") { return "LET"; };
+  if (ident == "fn") { return "FN"; };
+  if (ident == "return") { return "RETURN"; };
+  if (ident == "if") { return "IF"; };
+  if (ident == "else") { return "ELSE"; };
+  if (ident == "true") { return "TRUE"; };
+  if (ident == "false") { return "FALSE"; };
+  if (ident == "null") { return "NULL"; };
+  if (ident == "match") { return "MATCH"; };
+  if (ident == "while") { return "WHILE"; };
+  return "IDENT";
+};
+
+let make_tok = fn(kind, lit) {
+  return {"kind": kind, "lit": lit};
+};
+
+let lx_ch = fn(lx) {
+  if (lx["pos"] >= len(lx["src"])) {
+    return "";
+  };
+  return slice(lx["src"], lx["pos"], lx["pos"] + 1);
+};
+
+let lx_peek = fn(lx) {
+  let n = lx["pos"] + 1;
+  if (n >= len(lx["src"])) {
+    return "";
+  };
+  return slice(lx["src"], n, n + 1);
+};
+
+let lx_advance = fn(lx) {
+  let ch = lx_ch(lx);
+  if (ch == "\n") {
+    lx["line"] = lx["line"] + 1;
+    lx["col"] = 1;
+  } else {
+    if (ch != "") {
+      lx["col"] = lx["col"] + 1;
+    };
+  };
+  lx["pos"] = lx["pos"] + 1;
+  return lx;
+};
+
+let lx_skip_ws_comments = fn(lx) {
+  while (true) {
+    let ch = lx_ch(lx);
+    if (ch == "") {
+      return lx;
+    };
+    if (contains(WS, ch)) {
+      lx_advance(lx);
+    } else {
+      if (ch == "/") {
+        if (lx_peek(lx) == "/") {
+          while (lx_ch(lx) != "" ) {
+            if (lx_ch(lx) == "\n") {
+              break;
+            };
+            lx_advance(lx);
+          };
+        } else {
+          return lx;
+        };
+      } else {
+        return lx;
+      };
+    };
+  };
+  return lx;
+};
+
+let lx_read_ident = fn(lx) {
+  let start = lx["pos"];
+  while (contains(IDENT_CHARS, lx_ch(lx))) {
+    lx_advance(lx);
+  };
+  return slice(lx["src"], start, lx["pos"]);
+};
+
+let lx_read_number = fn(lx) {
+  let start = lx["pos"];
+  while (contains(DIGITS, lx_ch(lx))) {
+    lx_advance(lx);
+  };
+  return slice(lx["src"], start, lx["pos"]);
+};
+
+let lx_read_string = fn(lx) {
+  // opening quote already at pos
+  lx_advance(lx);
+  let out = "";
+  while (true) {
+    let ch = lx_ch(lx);
+    if (ch == "") {
+      return out;
+    };
+    if (ch == "\"") {
+      lx_advance(lx);
+      return out;
+    };
+    if (ch == "\\") {
+      lx_advance(lx);
+      let esc = lx_ch(lx);
+      if (esc == "n") {
+        out = out + "\n";
+      } else {
+        if (esc == "t") {
+          out = out + "\t";
+        } else {
+          if (esc == "\"") {
+            out = out + "\"";
+          } else {
+            if (esc == "\\") {
+              out = out + "\\";
+            } else {
+              out = out + esc;
+            };
+          };
+        };
+      };
+      lx_advance(lx);
+    } else {
+      out = out + ch;
+      lx_advance(lx);
+    };
+  };
+  return out;
+};
+
+let lx_next = fn(lx) {
+  lx_skip_ws_comments(lx);
+  let ch = lx_ch(lx);
+  if (ch == "") {
+    return make_tok("EOF", "");
+  };
+
+  if (ch == "=") {
+    if (lx_peek(lx) == "=") {
+      lx_advance(lx);
+      lx_advance(lx);
+      return make_tok("==", "==");
+    };
+    lx_advance(lx);
+    return make_tok("=", "=");
+  };
+  if (ch == "!") {
+    if (lx_peek(lx) == "=") {
+      lx_advance(lx);
+      lx_advance(lx);
+      return make_tok("!=", "!=");
+    };
+    lx_advance(lx);
+    return make_tok("!", "!");
+  };
+  if (ch == "<") {
+    if (lx_peek(lx) == "=") {
+      lx_advance(lx);
+      lx_advance(lx);
+      return make_tok("<=", "<=");
+    };
+    lx_advance(lx);
+    return make_tok("<", "<");
+  };
+  if (ch == ">") {
+    if (lx_peek(lx) == "=") {
+      lx_advance(lx);
+      lx_advance(lx);
+      return make_tok(">=", ">=");
+    };
+    lx_advance(lx);
+    return make_tok(">", ">");
+  };
+  if (ch == "-") {
+    if (lx_peek(lx) == ">") {
+      lx_advance(lx);
+      lx_advance(lx);
+      return make_tok("->", "->");
+    };
+    lx_advance(lx);
+    return make_tok("-", "-");
+  };
+  if (ch == "+") { lx_advance(lx); return make_tok("+", "+"); };
+  if (ch == "*") { lx_advance(lx); return make_tok("*", "*"); };
+  if (ch == "/") { lx_advance(lx); return make_tok("/", "/"); };
+  if (ch == "%") { lx_advance(lx); return make_tok("%", "%"); };
+  if (ch == ",") { lx_advance(lx); return make_tok(",", ","); };
+  if (ch == ";") { lx_advance(lx); return make_tok(";", ";"); };
+  if (ch == ":") { lx_advance(lx); return make_tok(":", ":"); };
+  if (ch == ".") { lx_advance(lx); return make_tok(".", "."); };
+  if (ch == "(") { lx_advance(lx); return make_tok("(", "("); };
+  if (ch == ")") { lx_advance(lx); return make_tok(")", ")"); };
+  if (ch == "{") { lx_advance(lx); return make_tok("{", "{"); };
+  if (ch == "}") { lx_advance(lx); return make_tok("}", "}"); };
+  if (ch == "[") { lx_advance(lx); return make_tok("[", "["); };
+  if (ch == "]") { lx_advance(lx); return make_tok("]", "]"); };
+  if (ch == "\"") {
+    let s = lx_read_string(lx);
+    return make_tok("STRING", s);
+  };
+  if (contains(LETTERS, ch)) {
+    let ident = lx_read_ident(lx);
+    return make_tok(keyword_kind(ident), ident);
+  };
+  if (contains(DIGITS, ch)) {
+    let num = lx_read_number(lx);
+    return make_tok("INT", num);
+  };
+
+  lx_advance(lx);
+  return make_tok("ILLEGAL", ch);
+};
+
+// Public: lex(source) -> array of tokens (including trailing EOF)
+let lex = fn(source) {
+  let lx = {"src": source, "pos": 0, "line": 1, "col": 1};
+  let toks = [];
+  while (true) {
+    let tok = lx_next(lx);
+    toks = push(toks, tok);
+    if (tok["kind"] == "EOF") {
+      return toks;
+    };
+    if (tok["kind"] == "ILLEGAL") {
+      return toks;
+    };
+  };
+  return toks;
+};
+
+null

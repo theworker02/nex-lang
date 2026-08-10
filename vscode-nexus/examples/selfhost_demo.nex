@@ -1,0 +1,32 @@
+// Demo program for the self-hosted Nexus toolchain.
+// Run with: node out/cli.js selfhost examples/selfhost_demo.nex
+
+puts("hello from selfhost");
+
+let x = 10;
+let y = 32;
+puts(x + y);
+
+let add = fn(a, b) {
+  return a + b;
+};
+puts(add(20, 22));
+
+if (x > 5) {
+  puts("x is big");
+} else {
+  puts("x is small");
+};
+
+let classified = match (4) {
+  0 -> 0,
+  1 -> 1,
+  _ -> 16
+};
+puts(classified);
+
+let nums = [1, 2, 3];
+puts(nums[1]);
+puts(len(nums));
+
+true

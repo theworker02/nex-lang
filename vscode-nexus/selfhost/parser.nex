@@ -1,0 +1,636 @@
+// Self-hosted Nexus parser (bootstrap subset).
+// Input: token array from lex(). Output: AST hashes {"kind": ...}.
+// Requires: lex from lexer.nex (imported by main).
+
+let node = fn(kind, fields) {
+  // fields is a hash; stamp kind onto it
+  fields["kind"] = kind;
+  return fields;
+};
+
+let make_parser = fn(toks) {
+  return {"toks": toks, "pos": 0, "errors": []};
+};
+
+let p_cur = fn(p) {
+  if (p["pos"] >= len(p["toks"])) {
+    return {"kind": "EOF", "lit": ""};
+  };
+  return p["toks"][p["pos"]];
+};
+
+let p_peek = fn(p) {
+  let n = p["pos"] + 1;
+  if (n >= len(p["toks"])) {
+    return {"kind": "EOF", "lit": ""};
+  };
+  return p["toks"][n];
+};
+
+let p_advance = fn(p) {
+  if (p["pos"] < len(p["toks"])) {
+    p["pos"] = p["pos"] + 1;
+  };
+  return p;
+};
+
+let p_cur_is = fn(p, kind) {
+  return p_cur(p)["kind"] == kind;
+};
+
+let p_peek_is = fn(p, kind) {
+  return p_peek(p)["kind"] == kind;
+};
+
+let p_error = fn(p, msg) {
+  p["errors"] = push(p["errors"], msg);
+  return p;
+};
+
+let p_expect = fn(p, kind) {
+  if (p_cur_is(p, kind)) {
+    p_advance(p);
+    return true;
+  };
+  p_error(p, "expected " + kind + ", got " + p_cur(p)["kind"]);
+  return false;
+};
+
+let p_consume_semis = fn(p) {
+  while (p_cur_is(p, ";")) {
+    p_advance(p);
+  };
+  return p;
+};
+
+// Forward-declared via shared env: parse_expression, parse_block, parse_statement
+
+let parse_block = fn(p) {
+  // current token is {
+  p_advance(p);
+  let body = [];
+  while (true) {
+    if (p_cur_is(p, "}")) {
+      break;
+    };
+    if (p_cur_is(p, "EOF")) {
+      p_error(p, "unclosed block");
+      break;
+    };
+    p_consume_semis(p);
+    if (p_cur_is(p, "}")) {
+      break;
+    };
+    let stmt = parse_statement(p);
+    body = push(body, stmt);
+    p_consume_semis(p);
+  };
+  p_expect(p, "}");
+  return node("Block", {"body": body});
+};
+
+let parse_params = fn(p) {
+  // current is (
+  p_advance(p);
+  let params = [];
+  if (p_cur_is(p, ")")) {
+    p_advance(p);
+    return params;
+  };
+  while (true) {
+    if (!(p_cur_is(p, "IDENT"))) {
+      p_error(p, "expected parameter name");
+      break;
+    };
+    params = push(params, p_cur(p)["lit"]);
+    p_advance(p);
+    // optional type annotation: : ident
+    if (p_cur_is(p, ":")) {
+      p_advance(p);
+      if (p_cur_is(p, "IDENT")) {
+        p_advance(p);
+      };
+    };
+    if (p_cur_is(p, ",")) {
+      p_advance(p);
+    } else {
+      break;
+    };
+  };
+  p_expect(p, ")");
+  return params;
+};
+
+let parse_fn_literal = fn(p) {
+  // current is FN
+  p_advance(p);
+  if (!(p_cur_is(p, "("))) {
+    p_error(p, "expected ( after fn");
+    return node("Error", {"msg": "fn"});
+  };
+  let params = parse_params(p);
+  // optional -> type
+  if (p_cur_is(p, "->")) {
+    p_advance(p);
+    if (p_cur_is(p, "IDENT")) {
+      p_advance(p);
+    };
+  };
+  if (!(p_cur_is(p, "{"))) {
+    p_error(p, "expected { for fn body");
+    return node("Error", {"msg": "fn body"});
+  };
+  let body = parse_block(p);
+  return node("Fn", {"params": params, "body": body});
+};
+
+let parse_if = fn(p) {
+  // current IF
+  p_advance(p);
+  if (p_cur_is(p, "(")) {
+    p_advance(p);
+  };
+  let cond = parse_expression(p);
+  if (p_cur_is(p, ")")) {
+    p_advance(p);
+  };
+  if (!(p_cur_is(p, "{"))) {
+    p_error(p, "expected { after if");
+    return node("Error", {"msg": "if"});
+  };
+  let then_b = parse_block(p);
+  let else_b = null;
+  if (p_cur_is(p, "ELSE")) {
+    p_advance(p);
+    if (p_cur_is(p, "IF")) {
+      else_b = parse_if(p);
+    } else {
+      if (p_cur_is(p, "{")) {
+        else_b = parse_block(p);
+      };
+    };
+  };
+  return node("If", {"cond": cond, "then": then_b, "else": else_b});
+};
+
+let parse_match = fn(p) {
+  // current MATCH
+  p_advance(p);
+  if (p_cur_is(p, "(")) {
+    p_advance(p);
+  };
+  let scrut = parse_expression(p);
+  if (p_cur_is(p, ")")) {
+    p_advance(p);
+  };
+  if (!(p_cur_is(p, "{"))) {
+    p_error(p, "expected { after match");
+    return node("Error", {"msg": "match"});
+  };
+  p_advance(p);
+  let arms = [];
+  while (true) {
+    if (p_cur_is(p, "}")) {
+      break;
+    };
+    if (p_cur_is(p, "EOF")) {
+      p_error(p, "unclosed match");
+      break;
+    };
+    // pattern
+    let pat = null;
+    if (p_cur_is(p, "INT")) {
+      pat = node("PatLit", {"v": int(p_cur(p)["lit"])});
+      p_advance(p);
+    } else {
+      if (p_cur_is(p, "STRING")) {
+        pat = node("PatLit", {"v": p_cur(p)["lit"]});
+        p_advance(p);
+      } else {
+        if (p_cur_is(p, "TRUE")) {
+          pat = node("PatLit", {"v": true});
+          p_advance(p);
+        } else {
+          if (p_cur_is(p, "FALSE")) {
+            pat = node("PatLit", {"v": false});
+            p_advance(p);
+          } else {
+            if (p_cur_is(p, "IDENT")) {
+              if (p_cur(p)["lit"] == "_") {
+                pat = node("PatWild", {});
+              } else {
+                pat = node("PatIdent", {"name": p_cur(p)["lit"]});
+              };
+              p_advance(p);
+            } else {
+              p_error(p, "bad match pattern");
+              break;
+            };
+          };
+        };
+      };
+    };
+    if (p_cur_is(p, "->")) {
+      p_advance(p);
+    } else {
+      p_error(p, "expected -> in match arm");
+      break;
+    };
+    let body = parse_expression(p);
+    arms = push(arms, {"pat": pat, "body": body});
+    if (p_cur_is(p, ",")) {
+      p_advance(p);
+    };
+  };
+  p_expect(p, "}");
+  return node("Match", {"val": scrut, "arms": arms});
+};
+
+let parse_array = fn(p) {
+  // current [
+  p_advance(p);
+  let els = [];
+  if (p_cur_is(p, "]")) {
+    p_advance(p);
+    return node("Array", {"els": els});
+  };
+  while (true) {
+    let el = parse_expression(p);
+    els = push(els, el);
+    if (p_cur_is(p, ",")) {
+      p_advance(p);
+    } else {
+      break;
+    };
+  };
+  p_expect(p, "]");
+  return node("Array", {"els": els});
+};
+
+let parse_hash = fn(p) {
+  // current {
+  p_advance(p);
+  let pairs = [];
+  if (p_cur_is(p, "}")) {
+    p_advance(p);
+    return node("Hash", {"pairs": pairs});
+  };
+  while (true) {
+    let key = parse_expression(p);
+    if (!(p_cur_is(p, ":"))) {
+      p_error(p, "expected : in hash");
+      break;
+    };
+    p_advance(p);
+    let val = parse_expression(p);
+    pairs = push(pairs, {"key": key, "val": val});
+    if (p_cur_is(p, ",")) {
+      p_advance(p);
+    } else {
+      break;
+    };
+  };
+  p_expect(p, "}");
+  return node("Hash", {"pairs": pairs});
+};
+
+let parse_primary = fn(p) {
+  let tok = p_cur(p);
+  let k = tok["kind"];
+  if (k == "INT") {
+    p_advance(p);
+    return node("Int", {"v": int(tok["lit"])});
+  };
+  if (k == "STRING") {
+    p_advance(p);
+    return node("Str", {"v": tok["lit"]});
+  };
+  if (k == "TRUE") {
+    p_advance(p);
+    return node("Bool", {"v": true});
+  };
+  if (k == "FALSE") {
+    p_advance(p);
+    return node("Bool", {"v": false});
+  };
+  if (k == "NULL") {
+    p_advance(p);
+    return node("Null", {});
+  };
+  if (k == "IDENT") {
+    p_advance(p);
+    return node("Ident", {"name": tok["lit"]});
+  };
+  if (k == "FN") {
+    return parse_fn_literal(p);
+  };
+  if (k == "IF") {
+    return parse_if(p);
+  };
+  if (k == "MATCH") {
+    return parse_match(p);
+  };
+  if (k == "(") {
+    p_advance(p);
+    let e = parse_expression(p);
+    p_expect(p, ")");
+    return e;
+  };
+  if (k == "[") {
+    return parse_array(p);
+  };
+  if (k == "{") {
+    // hash vs block: look ahead for key :
+    let pk = p_peek(p)["kind"];
+    if (pk == "}") {
+      return parse_hash(p);
+    };
+    if (pk == "STRING") {
+      return parse_hash(p);
+    };
+    if (pk == "IDENT") {
+      // could be block starting with ident stmt, or hash { a: 1 }
+      // peek further: after IDENT is : ?
+      let n2 = p["pos"] + 2;
+      if (n2 < len(p["toks"])) {
+        if (p["toks"][n2]["kind"] == ":") {
+          return parse_hash(p);
+        };
+      };
+      return parse_block(p);
+    };
+    return parse_block(p);
+  };
+  p_error(p, "unexpected token in expression: " + k);
+  p_advance(p);
+  return node("Error", {"msg": k});
+};
+
+let parse_args = fn(p) {
+  // current (
+  p_advance(p);
+  let args = [];
+  if (p_cur_is(p, ")")) {
+    p_advance(p);
+    return args;
+  };
+  while (true) {
+    args = push(args, parse_expression(p));
+    if (p_cur_is(p, ",")) {
+      p_advance(p);
+    } else {
+      break;
+    };
+  };
+  p_expect(p, ")");
+  return args;
+};
+
+let parse_postfix = fn(p) {
+  let expr = parse_primary(p);
+  while (true) {
+    if (p_cur_is(p, "(")) {
+      let args = parse_args(p);
+      expr = node("Call", {"callee": expr, "args": args});
+    } else {
+      if (p_cur_is(p, "[")) {
+        p_advance(p);
+        let idx = parse_expression(p);
+        p_expect(p, "]");
+        expr = node("Index", {"left": expr, "index": idx});
+      } else {
+        if (p_cur_is(p, ".")) {
+          p_advance(p);
+          if (!(p_cur_is(p, "IDENT"))) {
+            p_error(p, "expected property after .");
+            break;
+          };
+          let name = p_cur(p)["lit"];
+          p_advance(p);
+          expr = node("Member", {"left": expr, "name": name});
+        } else {
+          break;
+        };
+      };
+    };
+  };
+  return expr;
+};
+
+let parse_unary = fn(p) {
+  if (p_cur_is(p, "!") ) {
+    p_advance(p);
+    return node("Prefix", {"op": "!", "right": parse_unary(p)});
+  };
+  if (p_cur_is(p, "-")) {
+    p_advance(p);
+    return node("Prefix", {"op": "-", "right": parse_unary(p)});
+  };
+  return parse_postfix(p);
+};
+
+let parse_factor = fn(p) {
+  let left = parse_unary(p);
+  while (true) {
+    let k = p_cur(p)["kind"];
+    if (k == "*") {
+      p_advance(p);
+      left = node("Infix", {"op": "*", "left": left, "right": parse_unary(p)});
+    } else {
+      if (k == "/") {
+        p_advance(p);
+        left = node("Infix", {"op": "/", "left": left, "right": parse_unary(p)});
+      } else {
+        if (k == "%") {
+          p_advance(p);
+          left = node("Infix", {"op": "%", "left": left, "right": parse_unary(p)});
+        } else {
+          break;
+        };
+      };
+    };
+  };
+  return left;
+};
+
+let parse_term = fn(p) {
+  let left = parse_factor(p);
+  while (true) {
+    let k = p_cur(p)["kind"];
+    if (k == "+") {
+      p_advance(p);
+      left = node("Infix", {"op": "+", "left": left, "right": parse_factor(p)});
+    } else {
+      if (k == "-") {
+        p_advance(p);
+        left = node("Infix", {"op": "-", "left": left, "right": parse_factor(p)});
+      } else {
+        break;
+      };
+    };
+  };
+  return left;
+};
+
+let parse_comparison = fn(p) {
+  let left = parse_term(p);
+  while (true) {
+    let k = p_cur(p)["kind"];
+    if (k == "<") {
+      p_advance(p);
+      left = node("Infix", {"op": "<", "left": left, "right": parse_term(p)});
+    } else {
+      if (k == ">") {
+        p_advance(p);
+        left = node("Infix", {"op": ">", "left": left, "right": parse_term(p)});
+      } else {
+        if (k == "<=") {
+          p_advance(p);
+          left = node("Infix", {"op": "<=", "left": left, "right": parse_term(p)});
+        } else {
+          if (k == ">=") {
+            p_advance(p);
+            left = node("Infix", {"op": ">=", "left": left, "right": parse_term(p)});
+          } else {
+            break;
+          };
+        };
+      };
+    };
+  };
+  return left;
+};
+
+let parse_equality = fn(p) {
+  let left = parse_comparison(p);
+  while (true) {
+    let k = p_cur(p)["kind"];
+    if (k == "==") {
+      p_advance(p);
+      left = node("Infix", {"op": "==", "left": left, "right": parse_comparison(p)});
+    } else {
+      if (k == "!=") {
+        p_advance(p);
+        left = node("Infix", {"op": "!=", "left": left, "right": parse_comparison(p)});
+      } else {
+        break;
+      };
+    };
+  };
+  return left;
+};
+
+let parse_assign = fn(p) {
+  let left = parse_equality(p);
+  if (p_cur_is(p, "=")) {
+    p_advance(p);
+    let right = parse_assign(p);
+    if (left["kind"] == "Ident") {
+      return node("Assign", {"name": left["name"], "value": right});
+    };
+    p_error(p, "invalid assignment target");
+    return node("Error", {"msg": "assign"});
+  };
+  return left;
+};
+
+let parse_expression = fn(p) {
+  return parse_assign(p);
+};
+
+let parse_let = fn(p) {
+  // current LET
+  p_advance(p);
+  // optional mut
+  if (p_cur_is(p, "IDENT")) {
+    if (p_cur(p)["lit"] == "mut") {
+      p_advance(p);
+    };
+  };
+  if (!(p_cur_is(p, "IDENT"))) {
+    p_error(p, "expected name after let");
+    return node("Error", {"msg": "let"});
+  };
+  let name = p_cur(p)["lit"];
+  p_advance(p);
+  // optional : type
+  if (p_cur_is(p, ":")) {
+    p_advance(p);
+    if (p_cur_is(p, "IDENT")) {
+      p_advance(p);
+    };
+  };
+  if (!(p_cur_is(p, "="))) {
+    p_error(p, "expected = in let");
+    return node("Error", {"msg": "let ="});
+  };
+  p_advance(p);
+  let value = parse_expression(p);
+  return node("Let", {"name": name, "value": value});
+};
+
+let parse_return = fn(p) {
+  p_advance(p);
+  if (p_cur_is(p, ";") ) {
+    return node("Return", {"value": node("Null", {})});
+  };
+  if (p_cur_is(p, "}") ) {
+    return node("Return", {"value": node("Null", {})});
+  };
+  let value = parse_expression(p);
+  return node("Return", {"value": value});
+};
+
+let parse_while = fn(p) {
+  p_advance(p);
+  if (p_cur_is(p, "(")) {
+    p_advance(p);
+  };
+  let cond = parse_expression(p);
+  if (p_cur_is(p, ")")) {
+    p_advance(p);
+  };
+  if (!(p_cur_is(p, "{"))) {
+    p_error(p, "expected { after while");
+    return node("Error", {"msg": "while"});
+  };
+  let body = parse_block(p);
+  return node("While", {"cond": cond, "body": body});
+};
+
+let parse_statement = fn(p) {
+  if (p_cur_is(p, "LET")) {
+    return parse_let(p);
+  };
+  if (p_cur_is(p, "RETURN")) {
+    return parse_return(p);
+  };
+  if (p_cur_is(p, "WHILE")) {
+    return parse_while(p);
+  };
+  let expr = parse_expression(p);
+  return node("ExprStmt", {"expr": expr});
+};
+
+// Public: parse(tokens) -> {"ok": bool, "ast": Program|null, "errors": [...]}
+let parse = fn(toks) {
+  let p = make_parser(toks);
+  let body = [];
+  p_consume_semis(p);
+  while (!(p_cur_is(p, "EOF"))) {
+    let stmt = parse_statement(p);
+    body = push(body, stmt);
+    p_consume_semis(p);
+    if (p_cur(p)["kind"] == "ILLEGAL") {
+      p_error(p, "illegal token");
+      break;
+    };
+  };
+  let ast = node("Program", {"body": body});
+  if (len(p["errors"]) > 0) {
+    return {"ok": false, "ast": ast, "errors": p["errors"]};
+  };
+  return {"ok": true, "ast": ast, "errors": []};
+};
+
+null

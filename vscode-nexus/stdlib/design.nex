@@ -1,0 +1,391 @@
+// stdlib/design — Nexus Design Language builders.
+// Import with: import "design";
+// Trees are hashes tagged with "_design"; the host renders them to HTML/CSS
+// via design_document / design_response / design_render / design_css.
+// Client behaviors (search shortcut, copy, drawers) ship via the nxd kit
+// injected by design_document when page.kit is true (default).
+
+let design_node = fn(kind, props) {
+  let base = { "_design": kind };
+  if (props == null) {
+    return base;
+  };
+  return merge(base, props);
+};
+
+let theme = fn(tokens) {
+  return { "_design": "theme", "tokens": tokens };
+};
+
+let nexus_theme = fn() {
+  return theme({
+    "ink": "#0f172a",
+    "ink_soft": "#475569",
+    "paper": "#f1f5f9",
+    "mist": "#e2e8f0",
+    "surface": "#ffffff",
+    "line": "rgba(15, 23, 42, 0.1)",
+    "accent": "#1d4ed8",
+    "accent_deep": "#1e40af",
+    "accent_soft": "rgba(29, 78, 216, 0.1)",
+    "on_accent": "#ffffff",
+    "font_display": "\"Bricolage Grotesque\", \"Segoe UI\", sans-serif",
+    "font_body": "\"Figtree\", \"Segoe UI\", sans-serif",
+    "font_mono": "\"IBM Plex Mono\", \"Consolas\", monospace",
+    "radius": "0.35rem",
+    "max": "72rem",
+    "space_1": "0.25rem",
+    "space_2": "0.5rem",
+    "space_3": "0.75rem",
+    "space_4": "1rem",
+    "space_6": "1.5rem",
+    "space_8": "2rem",
+    "space_12": "3rem",
+    "ease": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "bp_sm": "640px",
+    "bp_md": "800px",
+    "bp_lg": "1100px",
+    "mode": "system",
+    "dark_ink": "#e8eef7",
+    "dark_ink_soft": "#94a3b8",
+    "dark_paper": "#0b1220",
+    "dark_mist": "#1e293b",
+    "dark_surface": "#111827",
+    "dark_line": "rgba(232, 238, 247, 0.12)",
+    "dark_accent": "#3b82f6",
+    "dark_accent_deep": "#60a5fa",
+    "dark_accent_soft": "rgba(59, 130, 246, 0.16)",
+    "dark_on_accent": "#0b1220"
+  });
+};
+
+let style = fn(props) {
+  return props;
+};
+
+let stack = fn(props, children) {
+  let n = design_node("stack", props);
+  n["children"] = children;
+  return n;
+};
+
+let row = fn(props, children) {
+  let n = design_node("row", props);
+  n["children"] = children;
+  return n;
+};
+
+let grid = fn(props, children) {
+  let n = design_node("grid", props);
+  n["children"] = children;
+  return n;
+};
+
+let section = fn(props, children) {
+  let n = design_node("section", props);
+  n["children"] = children;
+  return n;
+};
+
+let hero = fn(children) {
+  return { "_design": "hero", "children": children };
+};
+
+let shell = fn(children) {
+  return { "_design": "shell", "children": children };
+};
+
+let text = fn(variant, content) {
+  return { "_design": "text", "variant": variant, "content": content };
+};
+
+let kicker = fn(content) {
+  return text("kicker", content);
+};
+
+let headline = fn(content) {
+  return text("headline", content);
+};
+
+let lead = fn(content) {
+  return text("lead", content);
+};
+
+let body_text = fn(content) {
+  return text("body", content);
+};
+
+let code_text = fn(content) {
+  return text("code", content);
+};
+
+let brand = fn(name, tag) {
+  return {
+    "_design": "brand",
+    "name": name,
+    "tag": tag,
+    "href": "/",
+    "mark": "/static/img/logo.png"
+  };
+};
+
+let brand_link = fn(name, tag, href, mark) {
+  return {
+    "_design": "brand",
+    "name": name,
+    "tag": tag,
+    "href": href,
+    "mark": mark
+  };
+};
+
+let link_btn = fn(href, label) {
+  return { "_design": "link", "href": href, "label": label, "variant": "primary" };
+};
+
+let link_btn_secondary = fn(href, label) {
+  return { "_design": "link", "href": href, "label": label, "variant": "secondary" };
+};
+
+let link_text = fn(href, label) {
+  return { "_design": "link", "href": href, "label": label, "variant": "text" };
+};
+
+let spacer = fn(size) {
+  return { "_design": "spacer", "size": size };
+};
+
+let rule = fn() {
+  return { "_design": "rule" };
+};
+
+let codeblock = fn(lang, content) {
+  return { "_design": "codeblock", "lang": lang, "content": content };
+};
+
+let bullet_list = fn(items) {
+  return { "_design": "list", "items": items, "ordered": false };
+};
+
+let numbered_list = fn(items) {
+  return { "_design": "list", "items": items, "ordered": true };
+};
+
+let nav = fn(items) {
+  return { "_design": "nav", "items": items, "label": "Primary" };
+};
+
+let nav_item = fn(href, label, current) {
+  return { "href": href, "label": label, "current": current };
+};
+
+let topbar = fn(brand_node, nav_node) {
+  return { "_design": "topbar", "brand": brand_node, "nav": nav_node, "drawer": true };
+};
+
+let topbar_full = fn(brand_node, nav_node, extras) {
+  let n = topbar(brand_node, nav_node);
+  if (extras != null) {
+    n = merge(n, extras);
+  };
+  return n;
+};
+
+let page = fn(title, theme_node, body_node) {
+  return {
+    "_design": "page",
+    "title": title,
+    "description": "",
+    "theme": theme_node,
+    "body": body_node,
+    "kit": true
+  };
+};
+
+let page_full = fn(title, description, theme_node, topbar_node, body_node) {
+  return {
+    "_design": "page",
+    "title": title,
+    "description": description,
+    "theme": theme_node,
+    "topbar": topbar_node,
+    "body": body_node,
+    "kit": true
+  };
+};
+
+let page_layout = fn(title, description, theme_node, layout_node) {
+  return {
+    "_design": "page",
+    "title": title,
+    "description": description,
+    "theme": theme_node,
+    "body": layout_node,
+    "kit": true
+  };
+};
+
+// —— Forms & inputs ——
+
+let form = fn(props, children) {
+  let n = design_node("form", props);
+  n["children"] = children;
+  return n;
+};
+
+let label = fn(props, children) {
+  let n = design_node("label", props);
+  n["children"] = children;
+  return n;
+};
+
+let input = fn(props) {
+  return design_node("input", props);
+};
+
+let textarea = fn(props) {
+  return design_node("textarea", props);
+};
+
+let select = fn(props, options) {
+  let n = design_node("select", props);
+  n["options"] = options;
+  return n;
+};
+
+let checkbox = fn(props) {
+  return design_node("checkbox", props);
+};
+
+let fieldset = fn(props, children) {
+  let n = design_node("fieldset", props);
+  n["children"] = children;
+  return n;
+};
+
+let submit_btn = fn(label_text) {
+  return { "_design": "submit", "label": label_text, "variant": "primary" };
+};
+
+let submit_btn_secondary = fn(label_text) {
+  return { "_design": "submit", "label": label_text, "variant": "secondary" };
+};
+
+let button = fn(props) {
+  return design_node("button", props);
+};
+
+let field = fn(label_text, control) {
+  return {
+    "_design": "field",
+    "label": label_text,
+    "control": control
+  };
+};
+
+let hidden_input = fn(name, value) {
+  return { "_design": "input", "type": "hidden", "name": name, "value": value };
+};
+
+// —— Media ——
+
+let image = fn(src, alt) {
+  return { "_design": "image", "src": src, "alt": alt };
+};
+
+let image_sized = fn(src, alt, width, height) {
+  return {
+    "_design": "image",
+    "src": src,
+    "alt": alt,
+    "width": width,
+    "height": height
+  };
+};
+
+let figure = fn(props, children) {
+  let n = design_node("figure", props);
+  n["children"] = children;
+  return n;
+};
+
+// —— Chrome & structure ——
+
+let footer = fn(props, children) {
+  let n = design_node("footer", props);
+  n["children"] = children;
+  return n;
+};
+
+let sidebar = fn(props, children) {
+  let n = design_node("sidebar", props);
+  n["children"] = children;
+  return n;
+};
+
+let layout = fn(props) {
+  return design_node("layout", props);
+};
+
+let card = fn(props, children) {
+  let n = design_node("card", props);
+  n["children"] = children;
+  return n;
+};
+
+let alert = fn(variant, content) {
+  return { "_design": "alert", "variant": variant, "content": content };
+};
+
+let banner = fn(variant, content) {
+  return { "_design": "banner", "variant": variant, "content": content };
+};
+
+// —— Tables ——
+
+let table = fn(props, children) {
+  let n = design_node("table", props);
+  n["children"] = children;
+  return n;
+};
+
+let table_row = fn(cells) {
+  return { "_design": "tr", "cells": cells };
+};
+
+let table_head = fn(cells) {
+  return { "_design": "tr", "cells": cells, "head": true };
+};
+
+let table_cell = fn(content) {
+  return { "_design": "td", "content": content };
+};
+
+let table_header_cell = fn(content) {
+  return { "_design": "th", "content": content };
+};
+
+// —— Interactive attrs (compile to data-* for nxd.js) ——
+
+let copy_btn = fn(value, label_text) {
+  return {
+    "_design": "button",
+    "type": "button",
+    "label": label_text,
+    "variant": "secondary",
+    "copy": value
+  };
+};
+
+let search_input = fn(props) {
+  let n = design_node("input", props);
+  n["type"] = "search";
+  n["search"] = true;
+  return n;
+};
+
+let raw_html = fn(html_str) {
+  return { "_design": "raw", "html": html_str };
+};
+
+null

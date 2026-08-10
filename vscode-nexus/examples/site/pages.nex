@@ -1,0 +1,214 @@
+// Shared Nexus language site pages (design language).
+// Used by main.nex (live HTTP) and export.nex (static HTML for GitHub Pages).
+
+import "design";
+
+theme siteTheme {
+  ink = "#0f172a"
+  ink_soft = "#475569"
+  paper = "#f8fafc"
+  mist = "#e2e8f0"
+  surface = "#ffffff"
+  line = "rgba(15, 23, 42, 0.1)"
+  accent = "#7c3aed"
+  accent_deep = "#6d28d9"
+  accent_soft = "rgba(124, 58, 237, 0.12)"
+  on_accent = "#ffffff"
+  font_display = "\"Bricolage Grotesque\", \"Segoe UI\", sans-serif"
+  font_body = "\"Figtree\", \"Segoe UI\", sans-serif"
+  font_mono = "\"IBM Plex Mono\", Consolas, monospace"
+  max = "72rem"
+  space_1 = "0.25rem"
+  space_2 = "0.5rem"
+  space_3 = "0.75rem"
+  space_4 = "1rem"
+  space_6 = "1.5rem"
+  space_8 = "2rem"
+  space_12 = "3rem"
+  radius = "0.35rem"
+  ease = "cubic-bezier(0.22, 1, 0.36, 1)"
+  mode = "system"
+  dark_ink = "#e8eef7"
+  dark_ink_soft = "#94a3b8"
+  dark_paper = "#0b1220"
+  dark_mist = "#1e293b"
+  dark_surface = "#111827"
+  dark_line = "rgba(232, 238, 247, 0.12)"
+  dark_accent = "#a78bfa"
+  dark_accent_deep = "#c4b5fd"
+  dark_accent_soft = "rgba(167, 139, 250, 0.16)"
+  dark_on_accent = "#0b1220"
+}
+
+let mark = "/static/img/logo.svg";
+
+let site_nav = fn(active) {
+  return nav([
+    nav_item("/", "Home", active == "home"),
+    nav_item("/docs/", "Docs", active == "docs"),
+    nav_item("/install/", "Install", active == "install"),
+    nav_item("/design/", "Design", active == "design"),
+    nav_item("/guide/", "Guide", active == "guide")
+  ]);
+};
+
+let site_top = fn(active) {
+  return topbar(
+    brand_link("Nexus", "Language", "/", mark),
+    site_nav(active)
+  );
+};
+
+let site_footer = footer({}, [
+  body_text("Nexus — gradually typed, expression-oriented. Hosted by its own TypeScript toolchain."),
+  row({"gap": "space_4"}, [
+    link_text("/docs/", "Documentation"),
+    link_text("/install/", "Install"),
+    link_text("/design/", "Design language")
+  ])
+]);
+
+view home = page_full(
+  "Nexus",
+  "A gradually typed language with a TypeScript-first toolchain, bytecode VM, and self-hosted .nex pipeline.",
+  siteTheme,
+  site_top("home"),
+  [
+    hero([
+      kicker("Programming language"),
+      headline("Nexus hosts *itself*"),
+      lead("Write programs, docs, and sites in .nex. The TypeScript host compiles design trees to HTML/CSS and serves this homepage — no private registry required."),
+      row({"gap": "space_3"}, [
+        link_btn("/install/", "Get started"),
+        link_btn_secondary("/docs/", "Read the docs")
+      ])
+    ]),
+    section({"id": "why"}, [
+      stack({"gap": "space_6"}, [
+        text("kicker", "Why Nexus"),
+        grid({"columns": "3", "gap": "space_6"}, [
+          stack({"gap": "space_2"}, [
+            headline("TypeScript-first"),
+            body_text("Lexer, parser, evaluator, VM, and HTTP host ship in vscode-nexus. Compile once, run everywhere Node runs.")
+          ]),
+          stack({"gap": "space_2"}, [
+            headline("Self-hosting"),
+            body_text("Lexer / parser / evaluator written in .nex under selfhost/, bootstrapped by the TS CLI.")
+          ]),
+          stack({"gap": "space_2"}, [
+            headline("Design language"),
+            body_text("Themes and layout as .nex data — the same pipeline that builds this page.")
+          ])
+        ])
+      ])
+    ]),
+    section({"id": "snippet"}, [
+      stack({"gap": "space_4"}, [
+        text("kicker", "Try it"),
+        codeblock("nex", "let greet = fn(name) {\n  puts(\"hello, \" + name)\n};\n\ngreet(\"nexus\")"),
+        body_text("From vscode-nexus: npm run compile && node out/cli.js run examples/modules_demo.nex")
+      ])
+    ]),
+    site_footer
+  ]
+);
+
+view docs_page = page_full(
+  "Docs · Nexus",
+  "Language documentation overview served by the Nexus design host.",
+  siteTheme,
+  site_top("docs"),
+  [
+    hero([
+      kicker("Documentation"),
+      headline("Language reference"),
+      lead("Full docs live in the repo under vscode-nexus/docs/. This page is the self-hosted overview.")
+    ]),
+    section(null, [
+      stack({"gap": "space_4"}, [
+        bullet_list([
+          "Language overview, syntax, types, control flow, functions, modules, match",
+          "Builtins and stdlib (strings, result, design, …)",
+          "Toolchain: eval, bytecode VM, selfhost, WASM/LLVM text",
+          "Self-hosting status and deliberate subset limits",
+          "Packages client (nexus.toml) — optional local registry sibling (not published with nex-lang)"
+        ]),
+        row({"gap": "space_3"}, [
+          link_btn("/install/", "Install"),
+          link_btn_secondary("/guide/", "Design guide")
+        ]),
+        body_text("On disk: vscode-nexus/docs/README.md — or run npm run docs for the absolute path.")
+      ])
+    ]),
+    site_footer
+  ]
+);
+
+view install_page = page_full(
+  "Install · Nexus",
+  "Install and run the Nexus TypeScript toolchain.",
+  siteTheme,
+  site_top("install"),
+  [
+    hero([
+      kicker("Install"),
+      headline("Get Nexus running"),
+      lead("Node 20+, clone nex-lang, compile the TypeScript toolchain, then run programs or this site.")
+    ]),
+    section(null, [
+      stack({"gap": "space_4"}, [
+        codeblock("bash", "cd vscode-nexus\nnpm install\nnpm run compile\n\n# programs\nnode out/cli.js run examples/modules_demo.nex\nnode out/cli.js selfhost examples/selfhost_demo.nex\n\n# live site\nnpm run site\n# → http://localhost:8090\n\n# static export (GitHub Pages)\nnpm run build:site"),
+        body_text("A private local nex-registry sibling is optional for package-hub demos (npm run registry). It is not part of this published language repository.")
+      ])
+    ]),
+    site_footer
+  ]
+);
+
+view design_page = page_full(
+  "Design · Nexus",
+  "Nexus Design Language — themes and layout compiled to HTML/CSS.",
+  siteTheme,
+  site_top("design"),
+  [
+    hero([
+      kicker("Design language"),
+      headline("UI as .nex data"),
+      lead("theme blocks, stack/row/grid, and components render through design_response on the TypeScript host.")
+    ]),
+    section(null, [
+      stack({"gap": "space_4"}, [
+        codeblock("nex", "import \"design\";\n\ntheme dusk {\n  accent = \"#7c3aed\"\n  paper = \"#f8fafc\"\n}\n\nhttp_get(\"/\", fn(req) {\n  return design_response(page_full(\"Hi\", \"…\", dusk, topbar(…), [hero([…])]));\n});"),
+        link_btn("/guide/", "Authoring guide")
+      ])
+    ]),
+    site_footer
+  ]
+);
+
+view guide = page_full(
+  "Guide · Nexus Design",
+  "How to author pages in the Nexus design language.",
+  siteTheme,
+  site_top("guide"),
+  [
+    hero([
+      kicker("Guide"),
+      headline("Layout as data"),
+      lead("Compose stack, row, grid, text, and links. Return design_response(page) from an HTTP handler.")
+    ]),
+    section(null, [
+      stack({"gap": "space_4"}, [
+        bullet_list([
+          "stdlib/design.nex — builders",
+          "Host builtins — design_document / design_response",
+          "Sugar — theme Name { }, style { }, view Name ="
+        ]),
+        link_btn("/", "Back home")
+      ])
+    ]),
+    site_footer
+  ]
+);
+
+null

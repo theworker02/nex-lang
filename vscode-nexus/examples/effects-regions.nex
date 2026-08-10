@@ -1,0 +1,22 @@
+// Effects + regions + reflection
+effect Log {
+  info(msg)
+}
+
+struct Point {
+  x: int,
+  y: int
+}
+
+puts(Point_fields)
+
+region scratch {
+  let p = Point_to_json(0)
+  puts(p)
+}
+
+handle {
+  perform Log::info("hello from effect")
+} with Log {
+  info(msg) => { puts(msg); resume(0) }
+}

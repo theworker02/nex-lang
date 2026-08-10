@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  vscode-nexus:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vscode-nexus
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: vscode-nexus/package-lock.json
+      - run: npm ci
+      - run: npm run compile
+      - run: npm run smoke
+      - run: npm run test:nex
+      - name: Static site build (no registry)
+        env:
+          NEX_SITE_BASE: /nex-lang
+        run: npm run build:site
+      - name: Package Nex LSP extension (dry)
+        run: npx vsce package --no-dependencies

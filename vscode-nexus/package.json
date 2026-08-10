@@ -1,0 +1,287 @@
+{
+  "name": "nex-lsp",
+  "displayName": "Nex LSP",
+  "description": "Language support for Nexus (.nex): highlighting, diagnostics, IntelliSense hooks, run/REPL/test commands, and toolchain integration for VS Code, VSCodium, and Open VSX.",
+  "version": "0.1.0",
+  "publisher": "theworker02",
+  "license": "MIT",
+  "icon": "media/logo-256.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Snippets",
+    "Other"
+  ],
+  "keywords": [
+    "nex",
+    "nexus",
+    "lsp",
+    "language server",
+    "language support",
+    "programming languages",
+    "syntax highlighting",
+    "diagnostics",
+    "interpreter",
+    "bytecode",
+    "self-hosting",
+    "openvsx",
+    "vscodium"
+  ],
+  "activationEvents": [
+    "onLanguage:nexus",
+    "onCommand:nexus.run",
+    "onCommand:nexus.runVm",
+    "onCommand:nexus.selfhost",
+    "onCommand:nexus.test",
+    "onCommand:nexus.repl",
+    "onCommand:nexus.compileWasm",
+    "onCommand:nexus.compileLlvm",
+    "onCommand:nexus.compileNative",
+    "onCommand:nexus.publish",
+    "onCommand:nexus.install"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "nexus",
+        "aliases": [
+          "Nexus",
+          "nex"
+        ],
+        "extensions": [
+          ".nex"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./media/nex-file-light.svg",
+          "dark": "./media/nex-file-dark.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "nexus",
+        "scopeName": "source.nexus",
+        "path": "./syntaxes/nex.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "nexus",
+        "path": "./snippets/nex.code-snippets"
+      }
+    ],
+    "commands": [
+      {
+        "command": "nexus.run",
+        "title": "Run File",
+        "category": "Nexus",
+        "icon": "$(play)"
+      },
+      {
+        "command": "nexus.runVm",
+        "title": "Run File (Bytecode VM)",
+        "category": "Nexus",
+        "icon": "$(debug-alt)"
+      },
+      {
+        "command": "nexus.selfhost",
+        "title": "Run File (Self-hosted)",
+        "category": "Nexus",
+        "icon": "$(server-process)"
+      },
+      {
+        "command": "nexus.test",
+        "title": "Run Tests",
+        "category": "Nexus",
+        "icon": "$(testing-run-all-icon)"
+      },
+      {
+        "command": "nexus.repl",
+        "title": "Open REPL",
+        "category": "Nexus",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "nexus.compileWasm",
+        "title": "Compile to WebAssembly (.wat)",
+        "category": "Nexus",
+        "icon": "$(file-binary)"
+      },
+      {
+        "command": "nexus.compileLlvm",
+        "title": "Compile to LLVM IR",
+        "category": "Nexus",
+        "icon": "$(file-code)"
+      },
+      {
+        "command": "nexus.compileNative",
+        "title": "Compile Native (WASM path + instructions)",
+        "category": "Nexus",
+        "icon": "$(desktop-download)"
+      },
+      {
+        "command": "nexus.publish",
+        "title": "Publish Package",
+        "category": "Nexus",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "nexus.install",
+        "title": "Install Package",
+        "category": "Nexus",
+        "icon": "$(cloud-download)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "nexus.run",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "editorTextFocus && editorLangId == nexus"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "resourceLangId == nexus",
+          "command": "nexus.run",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "when": "resourceLangId == nexus",
+          "command": "nexus.run",
+          "group": "navigation@1"
+        }
+      ],
+      "explorer/context": [
+        {
+          "when": "resourceExtname == .nex",
+          "command": "nexus.run",
+          "group": "navigation@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "nexus.run",
+          "when": "editorLangId == nexus || resourceExtname == .nex"
+        },
+        {
+          "command": "nexus.runVm",
+          "when": "editorLangId == nexus || resourceExtname == .nex"
+        },
+        {
+          "command": "nexus.selfhost",
+          "when": "editorLangId == nexus || resourceExtname == .nex"
+        },
+        {
+          "command": "nexus.test"
+        },
+        {
+          "command": "nexus.repl"
+        },
+        {
+          "command": "nexus.compileWasm",
+          "when": "editorLangId == nexus || resourceExtname == .nex"
+        },
+        {
+          "command": "nexus.compileLlvm",
+          "when": "editorLangId == nexus || resourceExtname == .nex"
+        },
+        {
+          "command": "nexus.compileNative",
+          "when": "editorLangId == nexus || resourceExtname == .nex"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Nexus",
+      "properties": {
+        "nexus.registryUrl": {
+          "type": "string",
+          "default": "http://localhost:8080",
+          "description": "Base URL of the Nexus package registry."
+        },
+        "nexus.diagnostics.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show parse, ownership, and effect diagnostics for .nex files."
+        },
+        "nexus.compileOutputDir": {
+          "type": "string",
+          "default": "",
+          "description": "Output directory for WASM/LLVM artifacts (default: <workspace>/nex-out)."
+        },
+        "nexus.compileTarget": {
+          "type": "string",
+          "enum": [
+            "eval",
+            "vm",
+            "wasm",
+            "llvm",
+            "native"
+          ],
+          "default": "eval",
+          "description": "Default compilation tier (--wasm / --native / --llvm / vm)."
+        },
+        "nexus.executionEngine": {
+          "type": "string",
+          "enum": [
+            "eval",
+            "vm"
+          ],
+          "default": "eval",
+          "description": "Runtime for Nexus: Run File — tree-walk evaluator or bytecode VM."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "tsc -p ./ --noEmit",
+    "smoke": "node scripts/smoke-language.js && node scripts/smoke-ultimate.js && node scripts/smoke-registry.js && node scripts/smoke-toolchain.js && node scripts/smoke-design.js && node scripts/smoke-templates.js",
+    "test:nex": "node out/cli.js test",
+    "repl": "node out/cli.js repl",
+    "run:nex": "node out/cli.js run",
+    "selfhost": "node out/cli.js selfhost",
+    "registry": "node scripts/run-registry.js",
+    "site": "node scripts/run-site.js",
+    "build:site": "node scripts/build-site.js",
+    "docs": "node scripts/print-docs-path.js",
+    "package": "vsce package --no-dependencies",
+    "publish:ovsx": "vsce package --no-dependencies && ovsx publish *.vsix"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "form-data": "^4.0.1",
+    "pg": "^8.13.1",
+    "smol-toml": "^1.3.1",
+    "tar": "^7.4.3"
+  },
+  "optionalDependencies": {
+    "koffi": "^2.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.10",
+    "@types/pg": "^8.11.10",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.2.1",
+    "typescript": "^5.7.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theworker02/nex-lang"
+  },
+  "bugs": {
+    "url": "https://github.com/theworker02/nex-lang/issues"
+  },
+  "homepage": "https://theworker02.github.io/nex-lang/"
+}

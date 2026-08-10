@@ -1,0 +1,25 @@
+// stdlib/strings — string helpers for the tree-walk runtime.
+// Import with: import "strings";
+
+let str_is_empty = fn(s) {
+  return len(s) == 0;
+};
+
+let str_repeat = fn(s, n) {
+  let out = "";
+  let i = 0;
+  while (i < n) {
+    out = out + s;
+    i = i + 1;
+  };
+  return out;
+};
+
+let str_pad_left = fn(s, width, pad) {
+  if (len(s) >= width) {
+    return s;
+  };
+  return str_repeat(pad, width - len(s)) + s;
+};
+
+null

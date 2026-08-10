@@ -1,0 +1,53 @@
+// Standalone Nexus language homepage — live HTTP server.
+// Fully self-contained under examples/site (no nex-registry required).
+// Run: npm run site  →  http://localhost:8090
+
+import "pages.nex";
+
+http_get("/", fn(req) {
+  return design_response(home);
+});
+
+http_get("/docs", fn(req) {
+  return design_response(docs_page);
+});
+
+http_get("/docs/", fn(req) {
+  return design_response(docs_page);
+});
+
+http_get("/install", fn(req) {
+  return design_response(install_page);
+});
+
+http_get("/install/", fn(req) {
+  return design_response(install_page);
+});
+
+http_get("/design", fn(req) {
+  return design_response(design_page);
+});
+
+http_get("/design/", fn(req) {
+  return design_response(design_page);
+});
+
+http_get("/guide", fn(req) {
+  return design_response(guide);
+});
+
+http_get("/guide/", fn(req) {
+  return design_response(guide);
+});
+
+http_get("/healthz", fn(req) {
+  return json({
+    "status": "ok",
+    "ready": true,
+    "site": "nex-lang",
+    "db_mode": "n/a"
+  });
+});
+
+puts("Nexus language site listening — /, /docs, /install, /design, /guide");
+null

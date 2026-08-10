@@ -1,0 +1,509 @@
+// Self-hosted Nexus tree-walk evaluator (bootstrap subset).
+// Evaluates AST from parse(). Host builtins: puts, len, str, int, type,
+// push, first, last, rest, slice, keys, has, get, assert, assert_eq.
+
+let is_err_val = fn(v) {
+  if (typeof(v) != "HASH") {
+    return false;
+  };
+  return has(v, "__err");
+};
+
+let make_err = fn(msg) {
+  return {"__err": true, "msg": msg};
+};
+
+let is_return = fn(v) {
+  if (typeof(v) != "HASH") {
+    return false;
+  };
+  return has(v, "__return");
+};
+
+let make_return = fn(v) {
+  return {"__return": true, "value": v};
+};
+
+let unwrap_return = fn(v) {
+  if (is_return(v)) {
+    return v["value"];
+  };
+  return v;
+};
+
+let env_new = fn(parent) {
+  return {"parent": parent, "store": {}};
+};
+
+let env_get = fn(env, name) {
+  if (has(env["store"], name)) {
+    return get(env["store"], name);
+  };
+  if (env["parent"] != null) {
+    return env_get(env["parent"], name);
+  };
+  return make_err("identifier not found: " + name);
+};
+
+let env_set = fn(env, name, value) {
+  env["store"][name] = value;
+  return value;
+};
+
+let env_assign = fn(env, name, value) {
+  if (has(env["store"], name)) {
+    env["store"][name] = value;
+    return value;
+  };
+  if (env["parent"] != null) {
+    return env_assign(env["parent"], name, value);
+  };
+  return make_err("identifier not found for assign: " + name);
+};
+
+let is_truthy = fn(v) {
+  if (v == null) {
+    return false;
+  };
+  if (v == false) {
+    return false;
+  };
+  return true;
+};
+
+let values_equal = fn(a, b) {
+  return a == b;
+};
+
+let make_fn = fn(params, body, env) {
+  return {"__fn": true, "params": params, "body": body, "env": env};
+};
+
+let is_fn = fn(v) {
+  if (typeof(v) != "HASH") {
+    return false;
+  };
+  return has(v, "__fn");
+};
+
+let is_builtin = fn(v) {
+  if (typeof(v) != "HASH") {
+    return false;
+  };
+  return has(v, "__builtin");
+};
+
+let call_builtin = fn(name, args) {
+  if (name == "puts") {
+    let i = 0;
+    while (i < len(args)) {
+      puts(args[i]);
+      i = i + 1;
+    };
+    return null;
+  };
+  if (name == "len") {
+    return len(args[0]);
+  };
+  if (name == "str") {
+    return str(args[0]);
+  };
+  if (name == "int") {
+    return int(args[0]);
+  };
+  if (name == "type") {
+    return typeof(args[0]);
+  };
+  if (name == "typeof") {
+    return typeof(args[0]);
+  };
+  if (name == "push") {
+    if (len(args) < 2) {
+      return make_err("push wants array and value");
+    };
+    return push(args[0], args[1]);
+  };
+  if (name == "first") {
+    return first(args[0]);
+  };
+  if (name == "last") {
+    return last(args[0]);
+  };
+  if (name == "rest") {
+    return rest(args[0]);
+  };
+  if (name == "slice") {
+    if (len(args) == 2) {
+      return slice(args[0], args[1]);
+    };
+    return slice(args[0], args[1], args[2]);
+  };
+  if (name == "keys") {
+    return keys(args[0]);
+  };
+  if (name == "has") {
+    return has(args[0], args[1]);
+  };
+  if (name == "get") {
+    return get(args[0], args[1]);
+  };
+  if (name == "assert") {
+    if (len(args) == 1) {
+      return assert(args[0]);
+    };
+    return assert(args[0], args[1]);
+  };
+  if (name == "assert_eq") {
+    if (len(args) == 2) {
+      return assert_eq(args[0], args[1]);
+    };
+    return assert_eq(args[0], args[1], args[2]);
+  };
+  return make_err("unknown builtin: " + name);
+};
+
+let install_builtins = fn(env) {
+  let names = [
+    "puts", "len", "str", "int", "typeof",
+    "push", "first", "last", "rest", "slice",
+    "keys", "has", "get", "assert", "assert_eq"
+  ];
+  let i = 0;
+  while (i < len(names)) {
+    env_set(env, names[i], {"__builtin": names[i]});
+    i = i + 1;
+  };
+  return env;
+};
+
+// Forward: eval_node
+
+let eval_block = fn(node, env) {
+  let result = null;
+  let i = 0;
+  let body = node["body"];
+  while (i < len(body)) {
+    result = eval_node(body[i], env);
+    if (is_err_val(result)) {
+      return result;
+    };
+    if (is_return(result)) {
+      return result;
+    };
+    i = i + 1;
+  };
+  return result;
+};
+
+let eval_prefix = fn(op, right) {
+  if (is_err_val(right)) {
+    return right;
+  };
+  if (op == "!") {
+    if (is_truthy(right)) {
+      return false;
+    };
+    return true;
+  };
+  if (op == "-") {
+    return 0 - right;
+  };
+  return make_err("unknown prefix " + op);
+};
+
+let eval_infix = fn(op, left, right) {
+  if (is_err_val(left)) {
+    return left;
+  };
+  if (is_err_val(right)) {
+    return right;
+  };
+  if (op == "+") {
+    return left + right;
+  };
+  if (op == "-") {
+    return left - right;
+  };
+  if (op == "*") {
+    return left * right;
+  };
+  if (op == "/") {
+    return left / right;
+  };
+  if (op == "%") {
+    return left % right;
+  };
+  if (op == "==") {
+    return left == right;
+  };
+  if (op == "!=") {
+    return left != right;
+  };
+  if (op == "<") {
+    return left < right;
+  };
+  if (op == ">") {
+    return left > right;
+  };
+  if (op == "<=") {
+    return left <= right;
+  };
+  if (op == ">=") {
+    return left >= right;
+  };
+  return make_err("unknown infix " + op);
+};
+
+let apply_fn = fn(fn_obj, args) {
+  if (is_builtin(fn_obj)) {
+    return call_builtin(fn_obj["__builtin"], args);
+  };
+  if (!(is_fn(fn_obj))) {
+    return make_err("not a function: " + typeof(fn_obj));
+  };
+  if (len(args) != len(fn_obj["params"])) {
+    return make_err(
+      "wrong arity: got " + str(len(args)) + " want " + str(len(fn_obj["params"]))
+    );
+  };
+  let extended = env_new(fn_obj["env"]);
+  let i = 0;
+  while (i < len(args)) {
+    env_set(extended, fn_obj["params"][i], args[i]);
+    i = i + 1;
+  };
+  let result = eval_node(fn_obj["body"], extended);
+  if (is_err_val(result)) {
+    return result;
+  };
+  return unwrap_return(result);
+};
+
+let match_pattern = fn(pat, value, env) {
+  let k = pat["kind"];
+  if (k == "PatWild") {
+    return env;
+  };
+  if (k == "PatLit") {
+    if (values_equal(pat["v"], value)) {
+      return env;
+    };
+    return null;
+  };
+  if (k == "PatIdent") {
+    let extended = env_new(env);
+    env_set(extended, pat["name"], value);
+    return extended;
+  };
+  return null;
+};
+
+let eval_node = fn(node, env) {
+  let k = node["kind"];
+
+  if (k == "Program") {
+    return eval_block(node, env);
+  };
+  if (k == "Block") {
+    return eval_block(node, env);
+  };
+  if (k == "ExprStmt") {
+    return eval_node(node["expr"], env);
+  };
+  if (k == "Let") {
+    let val = eval_node(node["value"], env);
+    if (is_err_val(val)) {
+      return val;
+    };
+    env_set(env, node["name"], val);
+    return val;
+  };
+  if (k == "Return") {
+    let val = eval_node(node["value"], env);
+    if (is_err_val(val)) {
+      return val;
+    };
+    return make_return(val);
+  };
+  if (k == "Assign") {
+    let val = eval_node(node["value"], env);
+    if (is_err_val(val)) {
+      return val;
+    };
+    return env_assign(env, node["name"], val);
+  };
+  if (k == "Int") {
+    return node["v"];
+  };
+  if (k == "Str") {
+    return node["v"];
+  };
+  if (k == "Bool") {
+    return node["v"];
+  };
+  if (k == "Null") {
+    return null;
+  };
+  if (k == "Ident") {
+    return env_get(env, node["name"]);
+  };
+  if (k == "Prefix") {
+    return eval_prefix(node["op"], eval_node(node["right"], env));
+  };
+  if (k == "Infix") {
+    return eval_infix(
+      node["op"],
+      eval_node(node["left"], env),
+      eval_node(node["right"], env)
+    );
+  };
+  if (k == "If") {
+    let cond = eval_node(node["cond"], env);
+    if (is_err_val(cond)) {
+      return cond;
+    };
+    if (is_truthy(cond)) {
+      return eval_node(node["then"], env);
+    };
+    if (node["else"] != null) {
+      return eval_node(node["else"], env);
+    };
+    return null;
+  };
+  if (k == "While") {
+    let result = null;
+    while (true) {
+      let cond = eval_node(node["cond"], env);
+      if (is_err_val(cond)) {
+        return cond;
+      };
+      if (!(is_truthy(cond))) {
+        break;
+      };
+      result = eval_node(node["body"], env);
+      if (is_err_val(result)) {
+        return result;
+      };
+      if (is_return(result)) {
+        return result;
+      };
+    };
+    return result;
+  };
+  if (k == "Fn") {
+    return make_fn(node["params"], node["body"], env);
+  };
+  if (k == "Call") {
+    let callee = eval_node(node["callee"], env);
+    if (is_err_val(callee)) {
+      return callee;
+    };
+    let args = [];
+    let i = 0;
+    let raw = node["args"];
+    while (i < len(raw)) {
+      let a = eval_node(raw[i], env);
+      if (is_err_val(a)) {
+        return a;
+      };
+      args = push(args, a);
+      i = i + 1;
+    };
+    return apply_fn(callee, args);
+  };
+  if (k == "Array") {
+    let els = [];
+    let i = 0;
+    let raw = node["els"];
+    while (i < len(raw)) {
+      let el = eval_node(raw[i], env);
+      if (is_err_val(el)) {
+        return el;
+      };
+      els = push(els, el);
+      i = i + 1;
+    };
+    return els;
+  };
+  if (k == "Hash") {
+    let h = {};
+    let i = 0;
+    let pairs = node["pairs"];
+    while (i < len(pairs)) {
+      let key = eval_node(pairs[i]["key"], env);
+      if (is_err_val(key)) {
+        return key;
+      };
+      let val = eval_node(pairs[i]["val"], env);
+      if (is_err_val(val)) {
+        return val;
+      };
+      h[key] = val;
+      i = i + 1;
+    };
+    return h;
+  };
+  if (k == "Index") {
+    let left = eval_node(node["left"], env);
+    if (is_err_val(left)) {
+      return left;
+    };
+    let index = eval_node(node["index"], env);
+    if (is_err_val(index)) {
+      return index;
+    };
+    if (typeof(left) == "ARRAY") {
+      return left[index];
+    };
+    if (typeof(left) == "STRING") {
+      return slice(left, index, index + 1);
+    };
+    if (typeof(left) == "HASH") {
+      return get(left, index);
+    };
+    return make_err("index on " + typeof(left));
+  };
+  if (k == "Member") {
+    let left = eval_node(node["left"], env);
+    if (is_err_val(left)) {
+      return left;
+    };
+    if (typeof(left) != "HASH") {
+      return make_err("member on " + typeof(left));
+    };
+    return get(left, node["name"]);
+  };
+  if (k == "Match") {
+    let val = eval_node(node["val"], env);
+    if (is_err_val(val)) {
+      return val;
+    };
+    let arms = node["arms"];
+    let i = 0;
+    while (i < len(arms)) {
+      let bound = match_pattern(arms[i]["pat"], val, env);
+      if (bound != null) {
+        return eval_node(arms[i]["body"], bound);
+      };
+      i = i + 1;
+    };
+    return make_err("match not exhaustive");
+  };
+  if (k == "Error") {
+    return make_err("parse error node: " + str(node["msg"]));
+  };
+  return make_err("unknown AST kind: " + k);
+};
+
+// Public: eval_program(ast) -> result value or error hash
+let eval_program = fn(ast) {
+  let env = env_new(null);
+  install_builtins(env);
+  let result = eval_node(ast, env);
+  if (is_return(result)) {
+    return result["value"];
+  };
+  return result;
+};
+
+null

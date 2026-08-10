@@ -1,0 +1,48 @@
+# Binaries
+/nex
+/nex.exe
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test / build
+/bin/
+/dist/
+/site/
+*.test
+*.out
+coverage.out
+
+# Node / TypeScript toolchain
+node_modules/
+vscode-nexus/node_modules/
+vscode-nexus/out/
+vscode-nexus/*.vsix
+*.vsix
+vscode-nexus/_recovery/
+vscode-nexus/out.backup*/
+vscode-nexus/nex-out*/
+vscode-nexus/nex-out-smoke/
+
+# Package manager
+.modules/
+*.tar.gz
+
+# Secrets / local env
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Editor / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+*.log
+
+# Storage artifacts (local demos)
+/storage/
+vscode-nexus/examples/site/storage/

@@ -1,0 +1,71 @@
+// Self-hosted Nexus driver (nexc-style entry).
+// Host bootstrap runs this file; we lex/parse/eval the user program in .nex.
+//
+// Host-provided: fs_read, puts, __argv__ (array of CLI args after `selfhost`).
+// Written in Nexus: lexer, parser, evaluator.
+
+import "lexer.nex";
+import "parser.nex";
+import "evaluator.nex";
+
+let usage = fn() {
+  puts("Usage: node out/cli.js selfhost <file.nex>");
+  puts("   or: npm run selfhost -- <file.nex>");
+  return 1;
+};
+
+let run_source = fn(source, label) {
+  let toks = lex(source);
+  if (len(toks) == 0) {
+    puts("selfhost: empty token stream for " + label);
+    return 1;
+  };
+  let last = toks[len(toks) - 1];
+  if (last["kind"] == "ILLEGAL") {
+    puts("selfhost lex error: illegal token " + last["lit"] + " in " + label);
+    return 1;
+  };
+
+  let parsed = parse(toks);
+  if (!(parsed["ok"])) {
+    puts("selfhost parse errors in " + label + ":");
+    let i = 0;
+    let errs = parsed["errors"];
+    while (i < len(errs)) {
+      puts("  " + errs[i]);
+      i = i + 1;
+    };
+    return 1;
+  };
+
+  let result = eval_program(parsed["ast"]);
+  if (typeof(result) == "HASH") {
+    if (has(result, "__err")) {
+      puts("selfhost runtime error: " + result["msg"]);
+      return 1;
+    };
+  };
+  if (result != null) {
+    puts(result);
+  };
+  return 0;
+};
+
+let main = fn() {
+  if (typeof(__argv__) != "ARRAY") {
+    puts("selfhost: __argv__ not injected by host");
+    return usage();
+  };
+  if (len(__argv__) < 1) {
+    return usage();
+  };
+  let path = __argv__[0];
+  let src = fs_read(path);
+  if (typeof(src) == "ERROR") {
+    puts("selfhost: cannot read " + path + ": " + str(src));
+    return 1;
+  };
+  return run_source(src, path);
+};
+
+main()

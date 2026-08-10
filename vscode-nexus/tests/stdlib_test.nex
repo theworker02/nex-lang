@@ -1,0 +1,27 @@
+import "strings";
+import "result";
+
+assert(str_is_empty(""), "empty string");
+assert(!str_is_empty("x"), "non-empty string");
+assert_eq(str_repeat("ab", 3), "ababab", "repeat");
+assert_eq(str_pad_left("7", 3, "0"), "007", "pad left");
+
+let r = ok(21);
+assert_eq(result_unwrap_or(r, 0), 21, "unwrap_or ok");
+assert_eq(result_unwrap_or(err("x"), 9), 9, "unwrap_or err");
+
+let mapped = result_map(ok(2), fn(n) { n * 10 });
+assert_eq(unwrap(mapped), 20, "result_map");
+
+assert_eq(escape_html("<b>"), "&lt;b&gt;", "escape_html");
+let m = merge({ "a": 1 }, { "b": 2 });
+assert_eq(m["a"], 1, "merge a");
+assert_eq(m["b"], 2, "merge b");
+
+import "design";
+let th = nexus_theme();
+assert(th["_design"] == "theme", "design theme");
+assert(headline("X")["variant"] == "headline", "design headline");
+
+puts("stdlib_test ok");
+true

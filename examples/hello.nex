@@ -1,0 +1,19 @@
+let greet = fn(name) {
+  return "Hello, " + name + "!";
+};
+
+let add = fn(a, b) {
+  return a + b;
+};
+
+puts(greet("Nex"));
+puts("2 + 3 =");
+puts(add(2, 3));
+
+if (add(2, 3) > 4) {
+  puts("math works");
+} else {
+  puts("unexpected");
+};
+
+add(10, 32)

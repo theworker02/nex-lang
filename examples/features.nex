@@ -1,0 +1,53 @@
+// Nexus language features demo — run: nex run examples/features.nex
+
+struct Point { x, y };
+
+let distance_sq = fn(p: hash) -> int {
+  return p.x * p.x + p.y * p.y;
+};
+
+let classify = fn(n: int) -> int {
+  return match (n) {
+    0 -> 0,
+    1 -> 1,
+    _ -> n * n
+  };
+};
+
+let parse_positive = fn(n: int) {
+  if (n > 0) {
+    return ok(n);
+  };
+  return err("expected positive int");
+};
+
+let doubled = fn(n: int) {
+  let v = try parse_positive(n);
+  return ok(v * 2);
+};
+
+let origin = Point(0, 0);
+let tip = Point(3, 4);
+
+puts("distance^2 =");
+puts(distance_sq(tip));
+
+puts("classify(4) =");
+puts(classify(4));
+
+puts("pipe map =");
+puts([1, 2, 3] |> map(fn(x) { x + 10 }));
+
+puts("filter odds =");
+puts([1, 2, 3, 4, 5] |> filter(fn(x) { x % 2 == 1 }));
+
+puts("result ok =");
+puts(unwrap(doubled(21)));
+
+puts("result err early-return =");
+puts(doubled(0));
+
+puts("field access =");
+puts(tip.x);
+
+origin

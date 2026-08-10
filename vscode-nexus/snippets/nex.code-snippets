@@ -1,0 +1,104 @@
+{
+  "Let binding": {
+    "prefix": "let",
+    "body": ["let ${1:name} = ${2:value};"],
+    "description": "Declare a variable"
+  },
+  "Function": {
+    "prefix": "fn",
+    "body": [
+      "let ${1:name} = fn(${2:params}) {",
+      "\t${3:return ${4:0};}",
+      "};"
+    ],
+    "description": "Declare a function"
+  },
+  "Enum": {
+    "prefix": "enum",
+    "body": [
+      "enum ${1:Name} {",
+      "\t${2:Variant},",
+      "\t${3:Other}(${4:x})",
+      "}"
+    ],
+    "description": "Algebraic data type"
+  },
+  "Match": {
+    "prefix": "match",
+    "body": [
+      "match ${1:value} {",
+      "\t${2:Pattern} => { $0 },",
+      "}"
+    ],
+    "description": "Pattern match"
+  },
+  "Effect": {
+    "prefix": "effect",
+    "body": [
+      "effect ${1:IO} {",
+      "\t${2:print}(${3:msg})",
+      "}"
+    ],
+    "description": "Declare an algebraic effect"
+  },
+  "Handle": {
+    "prefix": "handle",
+    "body": [
+      "handle {",
+      "\t$1",
+      "} with ${2:IO} {",
+      "\t${3:op}(${4:args}) => { resume($5); }",
+      "}"
+    ],
+    "description": "Handle effect operations"
+  },
+  "Region": {
+    "prefix": "region",
+    "body": ["region ${1:r} {", "\t$0", "}"],
+    "description": "Lexical memory region"
+  },
+  "Struct": {
+    "prefix": "struct",
+    "body": [
+      "struct ${1:Name} {",
+      "\t${2:field}: ${3:int}",
+      "}"
+    ],
+    "description": "Struct declaration"
+  },
+  "English fun": {
+    "prefix": "fun",
+    "body": [
+      "fun ${1:name}(${2:params}) do",
+      "\t$0",
+      "end"
+    ],
+    "description": "English-style function (syntax sugar)"
+  },
+  "If": {
+    "prefix": "if",
+    "body": ["if (${1:condition}) {", "\t$0", "}"],
+    "description": "If expression"
+  },
+  "If / else": {
+    "prefix": "ife",
+    "body": [
+      "if (${1:condition}) {",
+      "\t$2",
+      "} else {",
+      "\t$0",
+      "}"
+    ],
+    "description": "If / else expression"
+  },
+  "Return": {
+    "prefix": "ret",
+    "body": ["return ${1:value};"],
+    "description": "Return statement"
+  },
+  "Puts": {
+    "prefix": "puts",
+    "body": ["puts(${1:value});"],
+    "description": "Print a value"
+  }
+}

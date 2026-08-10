@@ -1,0 +1,27 @@
+// Static HTML export of the Nexus language site (no HTTP listen).
+// Invoked by: npm run build:site  (scripts/build-site.js)
+// Env: NEX_SITE_OUT = absolute output directory
+
+import "pages.nex";
+
+let out_dir = env("NEX_SITE_OUT");
+if (out_dir == "") {
+  out_dir = "site-dist";
+};
+
+let write_page = fn(rel, page) {
+  let html = design_document(page);
+  let path = out_dir + "/" + rel;
+  let n = fs_write(path, html);
+  puts("wrote " + path + " (" + str(n) + " bytes)");
+  return n;
+};
+
+write_page("index.html", home);
+write_page("docs/index.html", docs_page);
+write_page("install/index.html", install_page);
+write_page("design/index.html", design_page);
+write_page("guide/index.html", guide);
+
+puts("static site export complete → " + out_dir);
+null

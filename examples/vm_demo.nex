@@ -1,0 +1,33 @@
+// Core-language demo for the bytecode VM (no imports).
+// Run: nex run --vm examples/vm_demo.nex
+
+struct Point { x, y };
+
+let distance_sq = fn(p) {
+  return p.x * p.x + p.y * p.y;
+};
+
+let tip = Point(3, 4);
+puts("distance^2 =");
+puts(distance_sq(tip));
+
+let classify = fn(n) {
+  return match (n) {
+    0 -> 0,
+    1 -> 1,
+    _ -> n * n
+  };
+};
+puts("classify(5) =");
+puts(classify(5));
+
+let i = 0;
+let sum = 0;
+while (i < 5) {
+  sum = sum + i;
+  i = i + 1;
+};
+puts("sum =");
+puts(sum);
+
+sum

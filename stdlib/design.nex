@@ -1,0 +1,189 @@
+// stdlib/design — Nexus Design Language builders.
+// Import with: import "design";
+
+let design_node = fn(kind, props) {
+  let base = { "_design": kind };
+  if (props == null) {
+    return base;
+  };
+  return merge(base, props);
+};
+
+let theme = fn(tokens) {
+  return { "_design": "theme", "tokens": tokens };
+};
+
+let nexus_theme = fn() {
+  return theme({
+    "ink": "#0f172a",
+    "ink_soft": "#475569",
+    "paper": "#f1f5f9",
+    "mist": "#e2e8f0",
+    "surface": "#ffffff",
+    "line": "rgba(15, 23, 42, 0.1)",
+    "accent": "#1d4ed8",
+    "accent_deep": "#1e40af",
+    "accent_soft": "rgba(29, 78, 216, 0.1)",
+    "on_accent": "#ffffff",
+    "font_display": "\"Bricolage Grotesque\", \"Segoe UI\", sans-serif",
+    "font_body": "\"Figtree\", \"Segoe UI\", sans-serif",
+    "font_mono": "\"IBM Plex Mono\", \"Consolas\", monospace",
+    "radius": "0.35rem",
+    "max": "72rem",
+    "space_1": "0.25rem",
+    "space_2": "0.5rem",
+    "space_3": "0.75rem",
+    "space_4": "1rem",
+    "space_6": "1.5rem",
+    "space_8": "2rem",
+    "space_12": "3rem",
+    "ease": "cubic-bezier(0.22, 1, 0.36, 1)"
+  });
+};
+
+let style = fn(props) {
+  return props;
+};
+
+let stack = fn(props, children) {
+  let n = design_node("stack", props);
+  n["children"] = children;
+  return n;
+};
+
+let row = fn(props, children) {
+  let n = design_node("row", props);
+  n["children"] = children;
+  return n;
+};
+
+let grid = fn(props, children) {
+  let n = design_node("grid", props);
+  n["children"] = children;
+  return n;
+};
+
+let section = fn(props, children) {
+  let n = design_node("section", props);
+  n["children"] = children;
+  return n;
+};
+
+let hero = fn(children) {
+  return { "_design": "hero", "children": children };
+};
+
+let shell = fn(children) {
+  return { "_design": "shell", "children": children };
+};
+
+let text = fn(variant, content) {
+  return { "_design": "text", "variant": variant, "content": content };
+};
+
+let kicker = fn(content) {
+  return text("kicker", content);
+};
+
+let headline = fn(content) {
+  return text("headline", content);
+};
+
+let lead = fn(content) {
+  return text("lead", content);
+};
+
+let body_text = fn(content) {
+  return text("body", content);
+};
+
+let code_text = fn(content) {
+  return text("code", content);
+};
+
+let brand = fn(name, tag) {
+  return {
+    "_design": "brand",
+    "name": name,
+    "tag": tag,
+    "href": "/",
+    "mark": "/static/img/logo.png"
+  };
+};
+
+let brand_link = fn(name, tag, href, mark) {
+  return {
+    "_design": "brand",
+    "name": name,
+    "tag": tag,
+    "href": href,
+    "mark": mark
+  };
+};
+
+let link_btn = fn(href, label) {
+  return { "_design": "link", "href": href, "label": label, "variant": "primary" };
+};
+
+let link_btn_secondary = fn(href, label) {
+  return { "_design": "link", "href": href, "label": label, "variant": "secondary" };
+};
+
+let link_text = fn(href, label) {
+  return { "_design": "link", "href": href, "label": label, "variant": "text" };
+};
+
+let spacer = fn(size) {
+  return { "_design": "spacer", "size": size };
+};
+
+let rule = fn() {
+  return { "_design": "rule" };
+};
+
+let codeblock = fn(lang, content) {
+  return { "_design": "codeblock", "lang": lang, "content": content };
+};
+
+let bullet_list = fn(items) {
+  return { "_design": "list", "items": items, "ordered": false };
+};
+
+let numbered_list = fn(items) {
+  return { "_design": "list", "items": items, "ordered": true };
+};
+
+let nav = fn(items) {
+  return { "_design": "nav", "items": items, "label": "Primary" };
+};
+
+let nav_item = fn(href, label, current) {
+  return { "href": href, "label": label, "current": current };
+};
+
+let topbar = fn(brand_node, nav_node) {
+  return { "_design": "topbar", "brand": brand_node, "nav": nav_node };
+};
+
+let page = fn(title, theme_node, body_node) {
+  return {
+    "_design": "page",
+    "title": title,
+    "description": "",
+    "theme": theme_node,
+    "body": body_node
+  };
+};
+
+let page_full = fn(title, description, theme_node, topbar_node, body_node) {
+  return {
+    "_design": "page",
+    "title": title,
+    "description": description,
+    "theme": theme_node,
+    "topbar": topbar_node,
+    "body": body_node
+  };
+};
+
+null

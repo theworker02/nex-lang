@@ -1,0 +1,20 @@
+// Ultimate Nexus showcase (stdlib + sugar + ADTs)
+set answer to 40
+
+fun bump(x) do
+  return x + 2
+end
+
+enum Option {
+  Some(x),
+  None
+}
+
+let v = Option::Some(bump(answer))
+match v {
+  Option::Some(n) => { puts(n) },
+  Option::None => { puts("none") }
+}
+
+puts(sha256("nexus"))
+puts(mem_stats())

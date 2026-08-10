@@ -1,0 +1,8 @@
+// Demonstrates local + stdlib module imports.
+// Run: nex run examples/modules_demo.nex
+
+import "strings";
+
+puts(str_repeat("nex ", 3));
+puts(str_pad_left("42", 5, "0"));
+"ok"

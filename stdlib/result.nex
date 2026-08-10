@@ -1,0 +1,18 @@
+// stdlib/result — helpers around ok/err Result hashes.
+// Import with: import "result";
+
+let result_map = fn(r, f) {
+  if (is_ok(r)) {
+    return ok(f(unwrap(r)));
+  };
+  return r;
+};
+
+let result_unwrap_or = fn(r, fallback) {
+  if (is_ok(r)) {
+    return unwrap(r);
+  };
+  return fallback;
+};
+
+null

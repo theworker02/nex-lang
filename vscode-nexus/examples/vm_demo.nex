@@ -1,0 +1,6 @@
+// Bytecode VM-friendly demo (no imports).
+let add = fn(a, b) { return a + b; };
+puts(str(add(20, 22)));
+let xs = [1, 2, 3];
+puts(str(xs[1]));
+42

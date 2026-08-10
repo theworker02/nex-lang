@@ -1,0 +1,2 @@
+// Alias entry point for the self-hosted toolchain.
+import "main.nex";
