@@ -2,7 +2,7 @@
   <img src="assets/logo.png" alt="Nexus" width="160" height="160">
 </p>
 
-<h1 align="center">Nexus</h1>
+<h1 align="center">Nex Lang</h1>
 
 <p align="center">
   A gradually typed, expression-oriented language with a TypeScript-first toolchain,<br>
