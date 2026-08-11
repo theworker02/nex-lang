@@ -4,6 +4,7 @@ import { Parser } from "./parser";
 import { MacroExpander } from "./macro";
 import { OwnershipChecker } from "./checker";
 import { checkEffects } from "./effects";
+import { checkProgram } from "./static_check";
 import { expandReflection } from "./reflection";
 import { lowerSyntax } from "./syntax";
 
@@ -136,6 +137,14 @@ export function collectParseDiagnostics(
     diagnostics.push(
       errorToDiagnostic(document, d.message, vscode.DiagnosticSeverity.Error),
     );
+  }
+
+  for (const d of checkProgram(program)) {
+    const severity =
+      d.severity === "warning"
+        ? vscode.DiagnosticSeverity.Warning
+        : vscode.DiagnosticSeverity.Error;
+    diagnostics.push(errorToDiagnostic(document, d.message, severity));
   }
 
   return diagnostics;
