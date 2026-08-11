@@ -40,7 +40,8 @@ theme siteTheme {
   dark_on_accent = "#0b1220"
 }
 
-let mark = "/static/img/logo.svg";
+// Same binary as repo assets/logo.png (README mark) — not the simplified SVG stroke.
+let mark = "/static/img/logo.png";
 
 let site_nav = fn(active) {
   return nav([

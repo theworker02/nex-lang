@@ -1439,9 +1439,9 @@ export function renderDesignDocument(tree: DesignData): string {
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="${escapeHtml(description)}">
   <meta name="color-scheme" content="light dark">
-  <link rel="icon" href="/static/img/favicon.svg?v=20260810-logo" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/static/img/logo.png?v=20260810-logo" sizes="180x180">
-  <meta property="og:image" content="/static/img/logo.png?v=20260810-logo">
+  <link rel="icon" href="/static/img/favicon.svg?v=20260811-logo" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/static/img/logo.png?v=20260811-logo" sizes="180x180">
+  <meta property="og:image" content="/static/img/logo.png?v=20260811-logo">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;550;650;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">

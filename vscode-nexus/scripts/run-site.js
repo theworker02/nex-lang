@@ -16,22 +16,25 @@ const siteWeb = path.join(root, "examples", "site", "web");
 function ensureSiteWeb() {
   const imgDir = path.join(siteWeb, "static", "img");
   fs.mkdirSync(imgDir, { recursive: true });
+  // Prefer repo assets/ (README mark) over media/ copies so site == README.
+  const assets = path.resolve(root, "..", "assets");
   const media = path.join(root, "media");
   for (const name of ["logo.svg", "logo.png"]) {
     const dest = path.join(imgDir, name);
-    if (!fs.existsSync(dest)) {
-      const src = path.join(media, name);
-      if (fs.existsSync(src)) {
-        fs.copyFileSync(src, dest);
-      }
+    const fromAssets = path.join(assets, name);
+    const fromMedia = path.join(media, name);
+    const src = fs.existsSync(fromAssets)
+      ? fromAssets
+      : fs.existsSync(fromMedia)
+        ? fromMedia
+        : null;
+    if (src) {
+      fs.copyFileSync(src, dest);
     }
   }
-  const favicon = path.join(imgDir, "favicon.svg");
-  if (!fs.existsSync(favicon)) {
-    const logoSvg = path.join(imgDir, "logo.svg");
-    if (fs.existsSync(logoSvg)) {
-      fs.copyFileSync(logoSvg, favicon);
-    }
+  const logoSvg = path.join(imgDir, "logo.svg");
+  if (fs.existsSync(logoSvg)) {
+    fs.copyFileSync(logoSvg, path.join(imgDir, "favicon.svg"));
   }
   return siteWeb;
 }

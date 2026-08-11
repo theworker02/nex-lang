@@ -55,26 +55,42 @@ if (result.status !== 0) {
   process.exit(result.status || 1);
 }
 
-// Copy static assets (logos)
-const srcImg = path.join(root, "examples", "site", "web", "static", "img");
+// Copy static assets — logos must match README (repo assets/logo.*) exactly.
 const destImg = path.join(outDir, "static", "img");
+const siteImg = path.join(root, "examples", "site", "web", "static", "img");
 fs.mkdirSync(destImg, { recursive: true });
-if (fs.existsSync(srcImg)) {
-  for (const name of fs.readdirSync(srcImg)) {
-    fs.copyFileSync(path.join(srcImg, name), path.join(destImg, name));
+fs.mkdirSync(siteImg, { recursive: true });
+
+const assetsDir = path.join(repoRoot, "assets");
+const mediaDir = path.join(root, "media");
+for (const name of ["logo.svg", "logo.png"]) {
+  const canonical = path.join(assetsDir, name);
+  const fallback = path.join(mediaDir, name);
+  const src = fs.existsSync(canonical)
+    ? canonical
+    : fs.existsSync(fallback)
+      ? fallback
+      : null;
+  if (!src) continue;
+  fs.copyFileSync(src, path.join(destImg, name));
+  fs.copyFileSync(src, path.join(siteImg, name));
+}
+
+// Keep any other site web assets (non-logo) from examples/site/web
+if (fs.existsSync(siteImg)) {
+  for (const name of fs.readdirSync(siteImg)) {
+    if (name === "logo.svg" || name === "logo.png") continue;
+    fs.copyFileSync(path.join(siteImg, name), path.join(destImg, name));
   }
-} else {
-  const media = path.join(root, "media");
-  for (const name of ["logo.svg", "logo.png"]) {
-    const src = path.join(media, name);
-    if (fs.existsSync(src)) {
-      fs.copyFileSync(src, path.join(destImg, name));
-    }
-  }
-  const logoSvg = path.join(destImg, "logo.svg");
-  if (fs.existsSync(logoSvg)) {
-    fs.copyFileSync(logoSvg, path.join(destImg, "favicon.svg"));
-  }
+}
+
+const logoPng = path.join(destImg, "logo.png");
+const logoSvg = path.join(destImg, "logo.svg");
+if (fs.existsSync(logoSvg)) {
+  fs.copyFileSync(logoSvg, path.join(destImg, "favicon.svg"));
+  fs.copyFileSync(logoSvg, path.join(siteImg, "favicon.svg"));
+} else if (fs.existsSync(logoPng)) {
+  // favicon.svg preferred; PNG is the visible brand mark (same as README)
 }
 
 function applyBase(html) {
