@@ -7,22 +7,22 @@ and this project aims to follow [Semantic Versioning](https://semver.org/) for t
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-11
+
+Extension package version **0.2.0**. Language / CLI version reported by `node out/cli.js version` is **nex-ts 0.4.0**.
+
 ### Added
 
-- **Trust pages on language site**: `/privacy`, `/security`, `/terms`, `/conduct` (live + static export); footer links to governance docs.
-- **Self-host language site**: design-authored homepage under `examples/site/` (`npm run site`) with bundled logos — no private registry required.
-- **Static site export** (`npm run build:site`) and GitHub Pages workflow (`.github/workflows/pages.yml`) → https://theworker02.github.io/nex-lang/
-- **Open VSX publish** workflow (`.github/workflows/openvsx.yml`) using `OVSX_PAT`; CI packages VSIX without requiring the secret.
-- **Funding** file (`.github/FUNDING.yml`) for GitHub Sponsors (`theworker02`).
-- CI workflow compiling, smoking, testing, building the static site, and packaging the extension.
-- Docs: `docs/site.md`; honest Postgres/`DATABASE_URL` notes for the TS host.
+- `vscode-nexus/src/language/static_check.ts` with `checkProgram` for undefined-name, arity-mismatch, and unused-local diagnostics.
+- Diagnostics pipeline wires static checks alongside ownership and effect analysis.
+- `nex-ts check <file.nex>` CLI subcommand.
+- `scripts/smoke-static-check.js` smoke coverage.
+
+## [0.1.1] - 2026-08-10
 
 ### Changed
 
-- Extension branded as **Nex LSP** (`theworker02.nex-lsp`, icon: ribbon N `media/logo-256.png`) for Open VSX / marketplace.
-- Extension `publisher` set to `theworker02` for Open VSX alignment.
-- Root `.gitignore` covers `node_modules`, `out/`, `.env`, `site/`, VSIX artifacts.
-- Registry documented as optional local sibling only (not published with nex-lang).
+- Patch release metadata alignment for Open VSX publishing.
 
 ## [0.3.0] - 2026-08-09
 
@@ -59,6 +59,8 @@ Language / CLI version reported by `node out/cli.js version` (`nex-ts 0.3.0`). E
 
 - Initial VS Code extension scaffold: language id `nexus`, TextMate grammar, snippets, basic commands and configuration keys.
 
-[Unreleased]: https://github.com/nex-lang/nex-lang/compare/nex-ts-0.3.0...HEAD
+[Unreleased]: https://github.com/theworker02/nex-lang/compare/nex-ts-0.4.0...HEAD
+[0.2.0]: https://github.com/theworker02/nex-lang/compare/vscode-nexus-0.1.1...vscode-nexus-0.2.0
+[0.1.1]: https://github.com/theworker02/nex-lang/releases/tag/vscode-nexus-0.1.1
 [0.3.0]: https://github.com/nex-lang/nex-lang/releases/tag/nex-ts-0.3.0
 [0.1.0]: https://github.com/nex-lang/nex-lang/releases/tag/vscode-nexus-0.1.0

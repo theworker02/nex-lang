@@ -20,6 +20,12 @@ import { runTests } from "./nextest";
 import { findStdlibDir, MODULES_DIRNAME } from "./runtime/modules";
 import { ArrayObj, IntegerObj, StringObj } from "./language/values";
 import { createWebHost, resolveWebHostConfig } from "./host";
+import { Lexer } from "./language/lexer";
+import { Parser } from "./language/parser";
+import { MacroExpander } from "./language/macro";
+import { expandReflection } from "./language/reflection";
+import { lowerSyntax } from "./language/syntax";
+import { checkProgram } from "./language/static_check";
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
@@ -45,6 +51,9 @@ async function main(): Promise<void> {
       case "test":
         await cmdTest(rest);
         break;
+      case "check":
+        await cmdCheck(rest);
+        break;
       case "selfhost":
         await cmdSelfhost(rest);
         break;
@@ -57,7 +66,7 @@ async function main(): Promise<void> {
       case "-v":
       case "--version":
         // eslint-disable-next-line no-console
-        console.log("nex-ts 0.3.0");
+        console.log("nex-ts 0.4.0");
         break;
       default:
         // eslint-disable-next-line no-console
@@ -85,6 +94,7 @@ Commands:
   selfhost <file.nex>                 Run via self-hosted .nex lexer/parser/evaluator
   repl [--vm]                         Interactive read-eval-print loop
   test [paths...]                     Run *_test.nex / tests/**/*.nex
+  check <file.nex>                    Static checks (undefined names, arity, unused locals)
   help                                Show this help
   version                             Show version
 
@@ -97,6 +107,7 @@ Examples:
   npm run compile && node out/cli.js selfhost examples/selfhost_demo.nex
   npm run registry
   npm run test:nex
+  npm run compile && node out/cli.js check examples/modules_demo.nex
   npm run repl
 
 Registry (HTTP) env:
@@ -239,6 +250,40 @@ async function cmdSelfhost(args: string[]): Promise<void> {
   // main() returns 0/1 exit status when successful
   if (result.value instanceof IntegerObj && result.value.value !== 0) {
     process.exit(result.value.value);
+  }
+}
+
+async function cmdCheck(args: string[]): Promise<void> {
+  const file = args.find((a) => !a.startsWith("-"));
+  if (!file) {
+    throw new Error("check requires a .nex file");
+  }
+  const abs = path.resolve(file);
+  const source = fs.readFileSync(abs, "utf8");
+  const lowered = lowerSyntax(source);
+  const parser = new Parser(new Lexer(lowered));
+  let program = parser.parseProgram();
+
+  const errors: string[] = [...parser.getErrors()];
+  const macro = new MacroExpander().expand(program);
+  program = macro.program;
+  errors.push(...macro.errors);
+  program = expandReflection(program).program;
+
+  for (const message of errors) {
+    // eslint-disable-next-line no-console
+    console.error(`[parse] ${message}`);
+  }
+
+  const diagnostics = checkProgram(program);
+  for (const d of diagnostics) {
+    const prefix = d.severity === "warning" ? "warning" : "error";
+    // eslint-disable-next-line no-console
+    console.error(`[${prefix}] ${d.message}`);
+  }
+
+  if (errors.length > 0 || diagnostics.some((d) => d.severity === "error")) {
+    process.exit(1);
   }
 }
 
