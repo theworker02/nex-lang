@@ -2,7 +2,7 @@
   "name": "nex-lsp",
   "displayName": "Nex LSP",
   "description": "Language support for Nexus (.nex): highlighting, diagnostics, IntelliSense hooks, run/REPL/test commands, and toolchain integration for VS Code, VSCodium, and Open VSX.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "theworker02",
   "license": "MIT",
   "icon": "media/logo-256.png",
