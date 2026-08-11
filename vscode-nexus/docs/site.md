@@ -11,7 +11,9 @@ npm run site
 # → http://localhost:8090
 ```
 
-Routes: `/`, `/docs`, `/install`, `/design`, `/guide`, `/healthz`. Logos under `examples/site/web/static/img/`.
+Routes: `/`, `/docs`, `/install`, `/design`, `/guide`, `/privacy`, `/security`, `/terms`, `/conduct`, `/healthz`. Logos under `examples/site/web/static/img/`.
+
+Trust / legal pages mirror repo root `PRIVACY.md`, `SECURITY.md`, `TERMS.md`, and `CODE_OF_CONDUCT.md` (maintained by theworker02 / nex-lang project maintainers).
 
 ## Static export
 

@@ -22,6 +22,10 @@ write_page("docs/index.html", docs_page);
 write_page("install/index.html", install_page);
 write_page("design/index.html", design_page);
 write_page("guide/index.html", guide);
+write_page("privacy/index.html", privacy_page);
+write_page("security/index.html", security_page);
+write_page("terms/index.html", terms_page);
+write_page("conduct/index.html", conduct_page);
 
 puts("static site export complete → " + out_dir);
 null

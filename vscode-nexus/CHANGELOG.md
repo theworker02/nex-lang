@@ -9,6 +9,7 @@ and this project aims to follow [Semantic Versioning](https://semver.org/) for t
 
 ### Added
 
+- **Trust pages on language site**: `/privacy`, `/security`, `/terms`, `/conduct` (live + static export); footer links to governance docs.
 - **Self-host language site**: design-authored homepage under `examples/site/` (`npm run site`) with bundled logos — no private registry required.
 - **Static site export** (`npm run build:site`) and GitHub Pages workflow (`.github/workflows/pages.yml`) → https://theworker02.github.io/nex-lang/
 - **Open VSX publish** workflow (`.github/workflows/openvsx.yml`) using `OVSX_PAT`; CI packages VSIX without requiring the secret.

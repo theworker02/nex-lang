@@ -14,7 +14,10 @@
   <a href="vscode-nexus/docs/getting-started.md">Getting started</a> ·
   <a href="vscode-nexus/docs/design/README.md">Design language</a> ·
   <a href="CHANGELOG.md">Changelog</a> ·
-  <a href="docs/ROADMAP.md">Roadmap</a>
+  <a href="docs/ROADMAP.md">Roadmap</a> ·
+  <a href="SECURITY.md">Security</a> ·
+  <a href="PRIVACY.md">Privacy</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
 ---
@@ -222,7 +225,7 @@ npm run package          # builds nex-lsp-*.vsix
 
 CI publishes **Nex LSP** to Open VSX on **GitHub Release** (or `workflow_dispatch` with confirm=`publish`) via [`.github/workflows/openvsx.yml`](.github/workflows/openvsx.yml).
 
-**Secret required:** repository secret `OVSX_PAT` — create a token at [open-vsx.org/user-settings/tokens](https://open-vsx.org/user-settings/tokens) and add it under GitHub → Settings → Secrets. PRs/CI package the VSIX without publishing when the secret is absent.
+**Configure later (maintainers):** add repository secret `OVSX_PAT` — create a token at [open-vsx.org/user-settings/tokens](https://open-vsx.org/user-settings/tokens) and store it under GitHub → Settings → Secrets. Until that secret is set, CI still packages the VSIX but skips the publish step. You do not need `OVSX_PAT` to develop or contribute.
 
 ---
 
@@ -264,6 +267,8 @@ Package client docs: [`vscode-nexus/docs/packages.md`](vscode-nexus/docs/package
 | [Design language](vscode-nexus/docs/design/README.md) | Themes → HTML/CSS |
 | [Examples](vscode-nexus/docs/examples.md) | Demo index |
 | [Language site / Pages](vscode-nexus/docs/site.md) | Self-host homepage + GitHub Pages |
+| [SECURITY.md](SECURITY.md) · [PRIVACY.md](PRIVACY.md) · [TERMS.md](TERMS.md) | Trust / legal |
+| [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) · [CONTRIBUTING.md](CONTRIBUTING.md) · [SUPPORT.md](SUPPORT.md) | Community |
 | [docs/spec.md](docs/spec.md) | Implemented surface (TS-first) |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Near-term priorities |
 
@@ -284,15 +289,29 @@ cd vscode-nexus && npm run docs   # prints absolute path to docs/
 
 ---
 
-## Contributing (outline)
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup, PR expectations, and maintainer notes (including optional Open VSX `OVSX_PAT`). Quick outline:
 
 1. Prefer changes in **`vscode-nexus/`** (TS is the supported path).
 2. `npm install && npm run compile && npm run smoke && npm run test:nex`
 3. Keep docs honest — document implemented behavior; call out subsets and stubs.
-4. Language/grammar changes: update `docs/spec.md` / language pages when behavior ships.
-5. Brand: use **mark-only** assets from `assets/` / `media/`; never bake “NEXUS” into logo files.
-6. Go changes: keep parity notes where TS and Go diverge (`try`, Postgres host).
-7. Do not commit secrets; do not publish `nex-registry` into this repository.
+4. Follow the [Code of Conduct](CODE_OF_CONDUCT.md). Questions: [SUPPORT.md](SUPPORT.md).
+
+---
+
+## Trust & legal
+
+| Doc | Purpose |
+| --- | --- |
+| [SECURITY.md](SECURITY.md) | Vulnerability reporting |
+| [PRIVACY.md](PRIVACY.md) | Privacy policy (local CLI/extension + static Pages) |
+| [TERMS.md](TERMS.md) | Terms of use (MIT / as-is) |
+| [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | Community standards |
+| [SUPPORT.md](SUPPORT.md) | Where to ask for help |
+| [LICENSE](LICENSE) | MIT |
+
+Site mirrors: [/privacy](https://theworker02.github.io/nex-lang/privacy/), [/security](https://theworker02.github.io/nex-lang/security/), [/terms](https://theworker02.github.io/nex-lang/terms/), [/conduct](https://theworker02.github.io/nex-lang/conduct/).
 
 ---
 

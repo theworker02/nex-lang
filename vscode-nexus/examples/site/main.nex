@@ -40,6 +40,38 @@ http_get("/guide/", fn(req) {
   return design_response(guide);
 });
 
+http_get("/privacy", fn(req) {
+  return design_response(privacy_page);
+});
+
+http_get("/privacy/", fn(req) {
+  return design_response(privacy_page);
+});
+
+http_get("/security", fn(req) {
+  return design_response(security_page);
+});
+
+http_get("/security/", fn(req) {
+  return design_response(security_page);
+});
+
+http_get("/terms", fn(req) {
+  return design_response(terms_page);
+});
+
+http_get("/terms/", fn(req) {
+  return design_response(terms_page);
+});
+
+http_get("/conduct", fn(req) {
+  return design_response(conduct_page);
+});
+
+http_get("/conduct/", fn(req) {
+  return design_response(conduct_page);
+});
+
 http_get("/healthz", fn(req) {
   return json({
     "status": "ok",
@@ -49,5 +81,5 @@ http_get("/healthz", fn(req) {
   });
 });
 
-puts("Nexus language site listening — /, /docs, /install, /design, /guide");
+puts("Nexus language site listening — /, /docs, /install, /design, /guide, /privacy, /security, /terms, /conduct");
 null

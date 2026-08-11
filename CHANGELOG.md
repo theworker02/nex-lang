@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **Governance / trust docs**: `SECURITY.md`, `PRIVACY.md`, `TERMS.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SUPPORT.md` — linked from README; site routes `/privacy`, `/security`, `/terms`, `/conduct`.
 - **Self-host site readiness**: language homepage via design language (`npm run site` / `npm run build:site`), GitHub Pages + CI/Open VSX workflows, funding file — publishable without `nex-registry`.
 - Brand mark (ribbon N) under `assets/` and `vscode-nexus/media/`.
 - Primary documentation under `vscode-nexus/docs/`.

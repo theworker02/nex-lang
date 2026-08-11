@@ -60,11 +60,15 @@ let site_top = fn(active) {
 };
 
 let site_footer = footer({}, [
-  body_text("Nexus — gradually typed, expression-oriented. Hosted by its own TypeScript toolchain."),
+  body_text("Nexus — gradually typed, expression-oriented. Hosted by its own TypeScript toolchain. Maintained by theworker02 / nex-lang project maintainers."),
   row({"gap": "space_4"}, [
     link_text("/docs/", "Documentation"),
     link_text("/install/", "Install"),
-    link_text("/design/", "Design language")
+    link_text("/design/", "Design language"),
+    link_text("/privacy/", "Privacy"),
+    link_text("/security/", "Security"),
+    link_text("/terms/", "Terms"),
+    link_text("/conduct/", "Conduct")
   ])
 ]);
 
@@ -205,6 +209,137 @@ view guide = page_full(
           "Sugar — theme Name { }, style { }, view Name ="
         ]),
         link_btn("/", "Back home")
+      ])
+    ]),
+    site_footer
+  ]
+);
+
+view privacy_page = page_full(
+  "Privacy · Nexus",
+  "How the Nexus open-source project handles information.",
+  siteTheme,
+  site_top("privacy"),
+  [
+    hero([
+      kicker("Privacy"),
+      headline("Your code stays local"),
+      lead("Nexus CLI and Nex LSP run on your machine. The GitHub Pages site is static. We do not sell personal data. Maintainers: theworker02 / nex-lang project maintainers.")
+    ]),
+    section(null, [
+      stack({"gap": "space_4"}, [
+        headline("Local toolchain"),
+        body_text("When you run programs, the REPL, tests, or npm run site, processing happens on your computer. The toolchain does not send your source to the Nexus maintainers."),
+        headline("Public website"),
+        body_text("https://theworker02.github.io/nex-lang/ is static HTML from npm run build:site. No first-party analytics, cookies, or accounts are implemented in this repo's site build. GitHub Pages may collect standard host logs under GitHub's privacy policy."),
+        headline("Third parties"),
+        bullet_list([
+          "GitHub — source, Issues, Actions, Pages",
+          "Open VSX — optional extension marketplace (third-party policies apply)",
+          "Your editor / OS — crash reports or sync features are vendor-controlled"
+        ]),
+        headline("Contact"),
+        body_text("GitHub @theworker02. Full policy: PRIVACY.md in the repository. Security reports: see /security/."),
+        row({"gap": "space_3"}, [
+          link_btn("/security/", "Security"),
+          link_btn_secondary("/terms/", "Terms of use")
+        ])
+      ])
+    ]),
+    site_footer
+  ]
+);
+
+view security_page = page_full(
+  "Security · Nexus",
+  "Vulnerability reporting and supported versions for nex-lang.",
+  siteTheme,
+  site_top("security"),
+  [
+    hero([
+      kicker("Security"),
+      headline("Report responsibly"),
+      lead("Please do not open public issues for security-sensitive reports. Prefer GitHub private vulnerability reporting on theworker02/nex-lang when available.")
+    ]),
+    section(null, [
+      stack({"gap": "space_4"}, [
+        headline("Supported versions"),
+        body_text("Fixes land on the current main branch. TypeScript toolchain and Nex LSP are supported; the legacy Go CLI is best-effort. There is no LTS line yet."),
+        headline("What to include"),
+        bullet_list([
+          "Affected component (CLI, extension, builtins, site, …)",
+          "Version or commit hash",
+          "Steps to reproduce and impact"
+        ]),
+        headline("Expectations"),
+        body_text("Acknowledgement within about 7 days on a best-effort basis. This is a small open-source project maintained by theworker02 / nex-lang project maintainers."),
+        headline("Scope note"),
+        body_text("Treat untrusted .nex programs like untrusted scripts — host builtins can perform real I/O. Full policy: SECURITY.md in the repository."),
+        row({"gap": "space_3"}, [
+          link_btn("/privacy/", "Privacy"),
+          link_btn_secondary("/", "Home")
+        ])
+      ])
+    ]),
+    site_footer
+  ]
+);
+
+view terms_page = page_full(
+  "Terms · Nexus",
+  "Terms of use for Nexus software and the language website.",
+  siteTheme,
+  site_top("terms"),
+  [
+    hero([
+      kicker("Terms of use"),
+      headline("MIT-licensed software"),
+      lead("Nexus is provided by theworker02 / nex-lang project maintainers. The MIT License in LICENSE controls your rights to the Software.")
+    ]),
+    section(null, [
+      stack({"gap": "space_4"}, [
+        headline("License"),
+        body_text("Use, copy, modify, and distribute under the MIT License, including the copyright notice and warranty disclaimer. If these terms conflict with MIT regarding the Software, MIT prevails."),
+        headline("No warranty"),
+        body_text("THE SOFTWARE AND WEBSITE ARE PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, as stated in the MIT License. You are responsible for how you run programs and host builtins."),
+        headline("Community"),
+        body_text("Project participation follows the Code of Conduct. Third-party marketplaces (e.g. Open VSX) have additional platform terms."),
+        body_text("Full text: TERMS.md in the repository."),
+        row({"gap": "space_3"}, [
+          link_btn("/conduct/", "Code of Conduct"),
+          link_btn_secondary("/privacy/", "Privacy")
+        ])
+      ])
+    ]),
+    site_footer
+  ]
+);
+
+view conduct_page = page_full(
+  "Conduct · Nexus",
+  "Contributor Covenant Code of Conduct for the Nexus community.",
+  siteTheme,
+  site_top("conduct"),
+  [
+    hero([
+      kicker("Code of Conduct"),
+      headline("Be respectful"),
+      lead("We follow the Contributor Covenant. Harassment and other unacceptable behavior are not tolerated in community spaces.")
+    ]),
+    section(null, [
+      stack({"gap": "space_4"}, [
+        headline("Standards"),
+        bullet_list([
+          "Empathy, kindness, and constructive feedback",
+          "No harassment, trolling, or publishing private information",
+          "Focus on what is best for the community"
+        ]),
+        headline("Enforcement"),
+        body_text("Report concerns to @theworker02 on GitHub or via a private channel arranged with maintainers. Full text and enforcement guidelines: CODE_OF_CONDUCT.md in the repository."),
+        row({"gap": "space_3"}, [
+          link_btn("/docs/", "Docs"),
+          link_btn_secondary("/", "Home")
+        ])
       ])
     ]),
     site_footer
