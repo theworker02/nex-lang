@@ -151,18 +151,28 @@ view docs_page = page_full(
 
 view install_page = page_full(
   "Install · Nexus",
-  "Install and run the Nexus TypeScript toolchain.",
+  "Download the Nexus CLI or install Nex LSP, then run .nex programs.",
   siteTheme,
   site_top("install"),
   [
     hero([
       kicker("Install"),
       headline("Get Nexus running"),
-      lead("Node 20+, clone nex-lang, compile the TypeScript toolchain, then run programs or this site.")
+      lead("Download the TypeScript CLI zip (Node 18+), or clone and compile from source. Editor support ships as Nex LSP.")
     ]),
     section(null, [
       stack({"gap": "space_4"}, [
+        text("kicker", "CLI download"),
+        body_text("Prebuilt nex-cli zip: unzip, then run node out/cli.js. Production dependencies are included."),
+        row({"gap": "space_3"}, [
+          link_btn("/downloads/nex-cli-0.1.1.zip", "Download CLI"),
+          link_btn_secondary("https://github.com/theworker02/nex-lang/releases/tag/v0.1.1", "GitHub release")
+        ]),
+        codeblock("bash", "unzip nex-cli-0.1.1.zip\ncd nex-cli-0.1.1\nnode out/cli.js help\nnode out/cli.js run path/to/program.nex\nnode out/cli.js repl"),
+        text("kicker", "From source"),
         codeblock("bash", "cd vscode-nexus\nnpm install\nnpm run compile\n\n# programs\nnode out/cli.js run examples/modules_demo.nex\nnode out/cli.js selfhost examples/selfhost_demo.nex\n\n# live site\nnpm run site\n# → http://localhost:8090\n\n# static export (GitHub Pages)\nnpm run build:site"),
+        text("kicker", "Editor"),
+        body_text("Install Nex LSP from Open VSX (theworker02.nex-lsp) or from the .vsix on the GitHub release."),
         body_text("A private local nex-registry sibling is optional for package-hub demos (npm run registry). It is not part of this published language repository.")
       ])
     ]),

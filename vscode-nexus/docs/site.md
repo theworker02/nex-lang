@@ -19,11 +19,15 @@ Trust / legal pages mirror repo root `PRIVACY.md`, `SECURITY.md`, `TERMS.md`, an
 
 ```powershell
 cd vscode-nexus
+npm run package:cli   # writes downloads/nex-cli-<version>.zip (commit when shipping)
 npm run build:site
 # writes ../site/  (gitignored; used by CI / Pages)
+# copies downloads/*.zip → site/downloads/ for direct Pages downloads
 ```
 
 Optional `NEX_SITE_BASE=/nex-lang` prefixes absolute `/…` links for GitHub project Pages.
+
+CLI direct download (after deploy): https://theworker02.github.io/nex-lang/downloads/nex-cli-0.1.1.zip
 
 ## GitHub Pages
 

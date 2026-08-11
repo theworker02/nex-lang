@@ -255,6 +255,7 @@
     "registry": "node scripts/run-registry.js",
     "site": "node scripts/run-site.js",
     "build:site": "node scripts/build-site.js",
+    "package:cli": "node scripts/package-cli.js",
     "docs": "node scripts/print-docs-path.js",
     "package": "vsce package --no-dependencies",
     "publish:ovsx": "vsce package --no-dependencies && ovsx publish *.vsix"

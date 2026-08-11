@@ -9,7 +9,9 @@
 # Test / build
 /bin/
 /dist/
+/dist-cli/
 /site/
+vscode-nexus/.cli-stage/
 *.test
 *.out
 coverage.out

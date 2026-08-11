@@ -116,6 +116,25 @@ if (base) {
   walkHtml(outDir);
 }
 
+// Ship CLI zip(s) for direct download on Pages (source: vscode-nexus/downloads/)
+const downloadsSrc = path.join(root, "downloads");
+const downloadsDest = path.join(outDir, "downloads");
+if (fs.existsSync(downloadsSrc)) {
+  fs.mkdirSync(downloadsDest, { recursive: true });
+  for (const name of fs.readdirSync(downloadsSrc)) {
+    if (!name.endsWith(".zip") && !name.endsWith(".txt")) continue;
+    fs.copyFileSync(
+      path.join(downloadsSrc, name),
+      path.join(downloadsDest, name),
+    );
+    console.log(`  downloads/${name}`);
+  }
+} else {
+  console.warn(
+    "warning: vscode-nexus/downloads/ missing — run npm run package:cli",
+  );
+}
+
 // .nojekyll so GitHub Pages serves paths starting with _
 fs.writeFileSync(path.join(outDir, ".nojekyll"), "");
 fs.writeFileSync(
