@@ -6,7 +6,7 @@
 
 <p align="center">
   A gradually typed, expression-oriented language with a TypeScript-first toolchain,<br>
-  bytecode VM, self-hosted <code>.nex</code> pipeline, design language, and package registry.
+  bytecode VM, self-hosted <code>.nex</code> pipeline, design language, and upcoming package registry.
 </p>
 
 <p align="center">
