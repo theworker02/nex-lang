@@ -1,0 +1,30 @@
+---
+description: Nex Lang project identity, sponsors, Open VSX, and publish boundaries
+alwaysApply: true
+---
+
+# Nex Lang — project identity
+
+## GitHub
+
+- User / org: `theworker02`
+- Primary repo: `theworker02/nex-lang`
+- Language site (GitHub Pages): https://theworker02.github.io/nex-lang/
+
+## Sponsors
+
+- **thanks.dev** is registered as GitHub user `theworker02`
+- Public URL: https://thanks.dev/u/gh/theworker02
+- `FUNDING.yml` key: `thanks_dev: u/gh/theworker02` (not bare `gh/username`)
+- Also: GitHub Sponsors `theworker02`
+
+## Open VSX — Nex LSP
+
+- Extension id: `theworker02.nex-lsp`
+- Display name: **Nex LSP**
+- Marketplace: https://open-vsx.org/extension/theworker02/nex-lsp
+- Package lives under `vscode-nexus/`
+
+## Do not publish
+
+- **Do NOT** publish `nex-registry` to GitHub. It is an optional local sibling for package-hub demos only (`npm run registry` from `vscode-nexus` when checked out beside this repo).

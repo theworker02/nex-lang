@@ -10,7 +10,8 @@
 </p>
 
 <p align="center">
-  <strong><a href="docs/README.md">Documentation hub</a></strong> ·
+  <strong><a href="https://open-vsx.org/extension/theworker02/nex-lsp">Install on Open VSX</a></strong> ·
+  <a href="docs/README.md">Documentation hub</a> ·
   <a href="docs/getting-started.md">Getting started</a> ·
   <a href="CHANGELOG.md">Changelog</a> ·
   <a href="../README.md">Monorepo README</a>
@@ -212,6 +213,10 @@ Module resolution (eval): absolute → relative to importer → workspace/app ro
 ---
 
 ## Editor (VS Code / VSCodium / Open VSX)
+
+**Install from Open VSX:** [Nex LSP](https://open-vsx.org/extension/theworker02/nex-lsp) (`theworker02.nex-lsp`)
+
+From source / VSIX:
 
 1. Open this folder (or the monorepo) and press **F5**, or `npm run package` for a VSIX.  
 2. Open a `.nex` file — syntax highlighting + snippets activate.  

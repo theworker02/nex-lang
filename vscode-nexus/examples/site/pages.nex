@@ -66,6 +66,7 @@ let site_footer = footer({}, [
     link_text("/docs/", "Documentation"),
     link_text("/install/", "Install"),
     link_text("/design/", "Design language"),
+    link_text("https://thanks.dev/u/gh/theworker02", "Sponsor (thanks.dev)"),
     link_text("/privacy/", "Privacy"),
     link_text("/security/", "Security"),
     link_text("/terms/", "Terms"),
@@ -172,7 +173,11 @@ view install_page = page_full(
         text("kicker", "From source"),
         codeblock("bash", "cd vscode-nexus\nnpm install\nnpm run compile\n\n# programs\nnode out/cli.js run examples/modules_demo.nex\nnode out/cli.js selfhost examples/selfhost_demo.nex\n\n# live site\nnpm run site\n# → http://localhost:8090\n\n# static export (GitHub Pages)\nnpm run build:site"),
         text("kicker", "Editor"),
-        body_text("Install Nex LSP from Open VSX (theworker02.nex-lsp) or from the .vsix on the GitHub release."),
+        body_text("Install Nex LSP (theworker02.nex-lsp) from Open VSX, or sideload the .vsix from a GitHub release."),
+        row({"gap": "space_3"}, [
+          link_btn("https://open-vsx.org/extension/theworker02/nex-lsp", "Open VSX — Nex LSP"),
+          link_btn_secondary("https://github.com/theworker02/nex-lang/releases", "GitHub releases")
+        ]),
         body_text("A private local nex-registry sibling is optional for package-hub demos (npm run registry). It is not part of this published language repository.")
       ])
     ]),

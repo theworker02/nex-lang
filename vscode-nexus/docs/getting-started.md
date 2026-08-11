@@ -72,6 +72,10 @@ npm run smoke
 
 ## Editor (VS Code / VSCodium / Open VSX)
 
+**Install:** [Nex LSP on Open VSX](https://open-vsx.org/extension/theworker02/nex-lsp) (`theworker02.nex-lsp`)
+
+From source:
+
 1. Open the `vscode-nexus` folder (or the monorepo) in the editor.
 2. Press **F5** (Extension Development Host) or package with `npm run package`.
 3. Open a `.nex` file and use **Nexus: Run File** (`Ctrl+Shift+R` / `Cmd+Shift+R`).

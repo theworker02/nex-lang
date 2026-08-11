@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://open-vsx.org/extension/theworker02/nex-lsp">Nex LSP (Open VSX)</a> ·
   <a href="vscode-nexus/docs/README.md">Docs</a> ·
   <a href="vscode-nexus/docs/getting-started.md">Getting started</a> ·
   <a href="vscode-nexus/docs/design/README.md">Design language</a> ·
@@ -40,7 +41,7 @@ The Nexus mark is the **ribbon N** only (magenta → purple → cyan). Wordmarks
 Nexus (`.nex`) is a practical language for scripting, tooling, and small web apps, with an honest bootstrap story:
 
 - **Primary runtime:** TypeScript host under [`vscode-nexus/`](vscode-nexus/) (tree-walk evaluator + optional bytecode VM).
-- **Editor:** **Nex LSP** — VS Code / VSCodium / Open VSX extension (`theworker02.nex-lsp`) in the same package.
+- **Editor:** **Nex LSP** — install from [Open VSX](https://open-vsx.org/extension/theworker02/nex-lsp) (`theworker02.nex-lsp`) for VS Code / VSCodium; also built from this package.
 - **Self-hosting:** Lexer / parser / evaluator written in `.nex` under [`vscode-nexus/selfhost/`](vscode-nexus/selfhost/), loaded by the TS host.
 - **Design language:** Declarative UI themes + layout in `.nex` → real HTML/CSS via host builtins.
 - **Language site:** Design-authored homepage + docs landing via `npm run site` / `npm run build:site` (GitHub Pages).
@@ -213,12 +214,14 @@ Public Pages URL: [https://theworker02.github.io/nex-lang/](https://theworker02.
 
 ## Editor extension — Nex LSP (Open VSX)
 
-Package id: `theworker02.nex-lsp` · display name **Nex LSP** · icon: ribbon N mark (`vscode-nexus/media/logo-256.png`).
+**Install:** [Nex LSP on Open VSX](https://open-vsx.org/extension/theworker02/nex-lsp) — extension id `theworker02.nex-lsp`.
+
+Works with VS Code, VSCodium, and other Open VSX–compatible editors. Display name **Nex LSP** · icon: ribbon N mark (`vscode-nexus/media/logo-256.png`).
 
 ```powershell
 cd vscode-nexus
 npm run compile
-npm run package          # builds nex-lsp-*.vsix
+npm run package          # builds nex-lsp-*.vsix (local / sideload install)
 # optional local Open VSX publish (needs token):
 # npx ovsx publish *.vsix --pat $env:OVSX_PAT
 ```
@@ -229,9 +232,12 @@ CI publishes **Nex LSP** to Open VSX on **GitHub Release** (or `workflow_dispatc
 
 ---
 
-## Funding
+## Funding / Sponsors
 
-See [`.github/FUNDING.yml`](.github/FUNDING.yml) (GitHub Sponsors: `theworker02`). Edit that file to add Ko-fi / Patreon / etc.
+- **thanks.dev:** [https://thanks.dev/u/gh/theworker02](https://thanks.dev/u/gh/theworker02) (GitHub user `theworker02`)
+- **GitHub Sponsors:** [`theworker02`](https://github.com/sponsors/theworker02)
+
+Configured in [`.github/FUNDING.yml`](.github/FUNDING.yml) (`github` + `thanks_dev`).
 
 ---
 
