@@ -1,0 +1,35 @@
+{
+  "name": "@theworker02/nex-sdk",
+  "version": "0.1.0",
+  "description": "Typed control client for the Nexus package registry API",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theworker02/nex-lang.git",
+    "directory": "packages/sdk"
+  },
+  "homepage": "https://github.com/theworker02/nex-lang/tree/main/packages/sdk",
+  "bugs": {
+    "url": "https://github.com/theworker02/nex-lang/issues"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "src", "README.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

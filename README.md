@@ -105,6 +105,7 @@ nex-lang/
 │   ├── docs/               # Language & toolchain documentation
 │   ├── examples/           # Demos (+ examples/site design demo)
 │   └── tests/              # *_test.nex
+├── packages/sdk/           # TypeScript registry control client (`@theworker02/nex-sdk`)
 ├── cmd/nex, pkg/*          # Legacy Go CLI / host
 ├── stdlib/                 # Shared .nex modules (mirrored in vscode-nexus/stdlib)
 ├── examples/, tests/       # Shared demos / tests at repo root
@@ -113,7 +114,7 @@ nex-lang/
 └── bin/                    # Built Go binaries (optional)
 ```
 
-Optional local sibling (not published): **`nex-registry/`** — package registry web app for demos. Served by `npm run registry` from `vscode-nexus` when checked out beside this repo.
+Optional local sibling (not published): **`nex-registry/`** — package registry web app for demos. Served by `npm run registry` from `vscode-nexus` when checked out beside this repo. Control it from TypeScript with [`packages/sdk`](packages/sdk) (`@theworker02/nex-sdk`).
 
 ---
 
