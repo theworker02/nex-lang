@@ -27,6 +27,10 @@ vscode-nexus/out.backup*/
 vscode-nexus/nex-out*/
 vscode-nexus/nex-out-smoke/
 
+# TypeScript registry SDK
+packages/sdk/node_modules/
+packages/sdk/dist/
+
 # Package manager
 .modules/
 *.tar.gz
