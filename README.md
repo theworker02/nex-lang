@@ -10,14 +10,14 @@
 </p>
 
 <p align="center">
-  <a href="https://open-vsx.org/extension/theworker02/nex-lsp">Nex LSP (Open VSX)</a> Â·
-  <a href="vscode-nexus/docs/README.md">Docs</a> Â·
-  <a href="vscode-nexus/docs/getting-started.md">Getting started</a> Â·
-  <a href="vscode-nexus/docs/design/README.md">Design language</a> Â·
-  <a href="CHANGELOG.md">Changelog</a> Â·
-  <a href="docs/ROADMAP.md">Roadmap</a> Â·
-  <a href="SECURITY.md">Security</a> Â·
-  <a href="PRIVACY.md">Privacy</a> Â·
+  <a href="https://open-vsx.org/extension/theworker02/nex-lsp">Nex LSP (Open VSX)</a> Ã‚Â·
+  <a href="vscode-nexus/docs/README.md">Docs</a> Ã‚Â·
+  <a href="vscode-nexus/docs/getting-started.md">Getting started</a> Ã‚Â·
+  <a href="vscode-nexus/docs/design/README.md">Design language</a> Ã‚Â·
+  <a href="CHANGELOG.md">Changelog</a> Ã‚Â·
+  <a href="docs/ROADMAP.md">Roadmap</a> Ã‚Â·
+  <a href="SECURITY.md">Security</a> Ã‚Â·
+  <a href="PRIVACY.md">Privacy</a> Ã‚Â·
   <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
@@ -25,7 +25,7 @@
 
 ## Brand mark
 
-The Nexus mark is the **ribbon N** only (magenta â†’ purple â†’ cyan). Wordmarks such as â€œNexusâ€ or â€œPackage Registryâ€ are **not** part of the image â€” use the mark file plus separate text in UI and docs.
+The Nexus mark is the **ribbon N** only (magenta Ã¢â€ â€™ purple Ã¢â€ â€™ cyan). Wordmarks such as Ã¢â‚¬Å“NexusÃ¢â‚¬Â or Ã¢â‚¬Å“Package RegistryÃ¢â‚¬Â are **not** part of the image Ã¢â‚¬â€ use the mark file plus separate text in UI and docs.
 
 | Asset | Path |
 | --- | --- |
@@ -41,14 +41,14 @@ The Nexus mark is the **ribbon N** only (magenta â†’ purple â†’ cyan).
 Nexus (`.nex`) is a practical language for scripting, tooling, and small web apps, with an honest bootstrap story:
 
 - **Primary runtime:** TypeScript host under [`vscode-nexus/`](vscode-nexus/) (tree-walk evaluator + optional bytecode VM).
-- **Editor:** **Nex LSP** â€” install from [Open VSX](https://open-vsx.org/extension/theworker02/nex-lsp) (`theworker02.nex-lsp`) for VS Code / VSCodium; also built from this package.
+- **Editor:** **Nex LSP** Ã¢â‚¬â€ install from [Open VSX](https://open-vsx.org/extension/theworker02/nex-lsp) (`theworker02.nex-lsp`) for VS Code / VSCodium; also built from this package.
 - **Self-hosting:** Lexer / parser / evaluator written in `.nex` under [`vscode-nexus/selfhost/`](vscode-nexus/selfhost/), loaded by the TS host.
-- **Design language:** Declarative UI themes + layout in `.nex` â†’ real HTML/CSS via host builtins.
+- **Design language:** Declarative UI themes + layout in `.nex` Ã¢â€ â€™ real HTML/CSS via host builtins.
 - **Language site:** Design-authored homepage + docs landing via `npm run site` / `npm run build:site` (GitHub Pages).
 - **Packages:** `nexus.toml` + publish/install client; optional **local** sibling `nex-registry` for package-hub demos (not published with this repo).
 - **Legacy Go CLI:** Still in this monorepo (`cmd/nex`, `pkg/*`) for some Go-only features (notably `try`).
 
-Host builtins (filesystem, HTTP, crypto, DB adapters, etc.) are **not** pure `.nex` â€” every language needs a native substrate. Self-hosting shrinks that substrate; it does not eliminate it. See [Self-hosting](vscode-nexus/docs/selfhosting.md).
+Host builtins (filesystem, HTTP, crypto, DB adapters, etc.) are **not** pure `.nex` Ã¢â‚¬â€ every language needs a native substrate. Self-hosting shrinks that substrate; it does not eliminate it. See [Self-hosting](vscode-nexus/docs/selfhosting.md).
 
 ---
 
@@ -68,13 +68,13 @@ node out/cli.js selfhost .\examples\selfhost_demo.nex
 npm run repl
 npm run test:nex
 
-# Language homepage (self-contained â€” no registry)
+# Language homepage (self-contained Ã¢â‚¬â€ no registry)
 npm run site
-# â†’ http://localhost:8090
+# Ã¢â€ â€™ http://localhost:8090
 
 # Static export for GitHub Pages
 npm run build:site
-# â†’ ../site/
+# Ã¢â€ â€™ ../site/
 ```
 
 **Website:** [https://theworker02.github.io/nex-lang/](https://theworker02.github.io/nex-lang/) (GitHub Pages)
@@ -91,30 +91,30 @@ A private sibling checkout of `nex-registry` can be served with `npm run registr
 
 ```text
 nex-lang/
-â”œâ”€â”€ assets/                 # Brand mark (logo.svg / logo.png) â€” mark only
-â”œâ”€â”€ vscode-nexus/           # â˜… Primary TS toolchain + VS Code extension + docs
-â”‚   â”œâ”€â”€ src/language/       # Lexer, parser, evaluator, builtins, diagnostics
-â”‚   â”œâ”€â”€ src/vm/             # Bytecode compiler + stack VM
-â”‚   â”œâ”€â”€ src/compiler/       # Multi-tier engine + WASM/LLVM text codegen
-â”‚   â”œâ”€â”€ src/host/           # HTTP host, templates, designâ†’HTML, memory DB
-â”‚   â”œâ”€â”€ src/registry/       # Package publish/install client
-â”‚   â”œâ”€â”€ src/cli.ts          # run / repl / test / selfhost
-â”‚   â”œâ”€â”€ selfhost/           # .nex lexer / parser / evaluator
-â”‚   â”œâ”€â”€ stdlib/             # Importable .nex modules (incl. design.nex)
-â”‚   â”œâ”€â”€ media/              # Extension icons + logo
-â”‚   â”œâ”€â”€ docs/               # Language & toolchain documentation
-â”‚   â”œâ”€â”€ examples/           # Demos (+ examples/site design demo)
-â”‚   â””â”€â”€ tests/              # *_test.nex
-â”œâ”€â”€ packages/sdk/           # TypeScript registry control client (`@theworker02/nex-sdk`)
-â”œâ”€â”€ cmd/nex, pkg/*          # Legacy Go CLI / host
-â”œâ”€â”€ stdlib/                 # Shared .nex modules (mirrored in vscode-nexus/stdlib)
-â”œâ”€â”€ examples/, tests/       # Shared demos / tests at repo root
-â”œâ”€â”€ docs/                   # Spec + roadmap (TS docs live under vscode-nexus/docs)
-â”œâ”€â”€ storage/                # Local artifact / seed storage (when used)
-â””â”€â”€ bin/                    # Built Go binaries (optional)
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ assets/                 # Brand mark (logo.svg / logo.png) Ã¢â‚¬â€ mark only
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ vscode-nexus/           # Ã¢Ëœâ€¦ Primary TS toolchain + VS Code extension + docs
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ src/language/       # Lexer, parser, evaluator, builtins, diagnostics
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ src/vm/             # Bytecode compiler + stack VM
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ src/compiler/       # Multi-tier engine + WASM/LLVM text codegen
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ src/host/           # HTTP host, templates, designÃ¢â€ â€™HTML, memory DB
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ src/registry/       # Package publish/install client
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ src/cli.ts          # run / repl / test / selfhost
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ selfhost/           # .nex lexer / parser / evaluator
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ stdlib/             # Importable .nex modules (incl. design.nex)
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ media/              # Extension icons + logo
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ docs/               # Language & toolchain documentation
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ examples/           # Demos (+ examples/site design demo)
+Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ tests/              # *_test.nex
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ packages/sdk/           # TypeScript registry control client (`@theworker02/nex-sdk`)
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ cmd/nex, pkg/*          # Legacy Go CLI / host
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ stdlib/                 # Shared .nex modules (mirrored in vscode-nexus/stdlib)
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ examples/, tests/       # Shared demos / tests at repo root
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ docs/                   # Spec + roadmap (TS docs live under vscode-nexus/docs)
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ storage/                # Local artifact / seed storage (when used)
+Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ bin/                    # Built Go binaries (optional)
 ```
 
-Optional local sibling (not published): **`nex-registry/`** â€” package registry web app for demos. Served by `npm run registry` from `vscode-nexus` when checked out beside this repo. Control it from TypeScript with [`packages/sdk`](packages/sdk) (`@theworker02/nex-sdk`).
+Optional local sibling (not published): **`nex-registry/`** Ã¢â‚¬â€ package registry web app for demos. Served by `npm run registry` from `vscode-nexus` when checked out beside this repo. Control it from TypeScript with [`packages/sdk`](packages/sdk) (`@theworker02/nex-sdk`).
 
 ---
 
@@ -133,7 +133,7 @@ flowchart TB
     Eval[Tree-walk evaluator]
     VM[Bytecode VM]
     Host[HTTP web host]
-    Design[Design â†’ HTML/CSS]
+    Design[Design Ã¢â€ â€™ HTML/CSS]
     Self[selfhost/*.nex]
     Client[RegistryClient]
   end
@@ -173,8 +173,8 @@ flowchart TB
 | --- | --- | --- | --- |
 | `eval` (default) | `run`, `nexus.executionEngine=eval` | Full tree-walk + modules + host builtins + HTTP | Preferred for apps / registry |
 | `vm` | `run --vm`, Run File (Bytecode VM) | Core language on stack VM | **No `import`**, no web-host builtins |
-| `selfhost` | `selfhost` | `.nex` lexâ†’parseâ†’eval | Deliberate subset (see selfhost docs) |
-| `wasm` / `llvm` / `native` | Editor compile commands | Emit `.wat` / `.ll` (+ native notes) | Core subset only â€” not a full AOT product |
+| `selfhost` | `selfhost` | `.nex` lexÃ¢â€ â€™parseÃ¢â€ â€™eval | Deliberate subset (see selfhost docs) |
+| `wasm` / `llvm` / `native` | Editor compile commands | Emit `.wat` / `.ll` (+ native notes) | Core subset only Ã¢â‚¬â€ not a full AOT product |
 
 ---
 
@@ -189,7 +189,7 @@ Documented in depth under [`vscode-nexus/docs/language/`](vscode-nexus/docs/lang
 - Pipes `|>`, Results `ok` / `err` / `unwrap` (TS path; `try` early-return is **Go-only**)
 - Modules: `import "strings";` with resolution across relative paths, `.modules/`, `stdlib/`
 - English-ish sugar lowered by the parser (string-safe `and` / `or` / `not`)
-- Experimental / partial: effects, regions, macros, async/spawn/chan â€” not production guarantees
+- Experimental / partial: effects, regions, macros, async/spawn/chan Ã¢â‚¬â€ not production guarantees
 
 ---
 
@@ -201,23 +201,23 @@ Nexus doubles as a **design language**: themes, layout, forms, and chrome author
 - Authoring walkthrough: [`vscode-nexus/docs/design/guide.md`](vscode-nexus/docs/design/guide.md)
 - Stdlib: `import "design"` (`stdlib/design.nex`)
 - Host builtins: `design_document`, `design_response`, `design_render`, `design_css`, `html_doc`
-- Brand chrome: `brand` / `brand_link` take a **mark URL** (image) plus separate name/tag text â€” the mark file has no wordmark baked in
+- Brand chrome: `brand` / `brand_link` take a **mark URL** (image) plus separate name/tag text Ã¢â‚¬â€ the mark file has no wordmark baked in
 
 ```powershell
 cd vscode-nexus
-npm run site         # live language site â†’ http://localhost:8090
-npm run build:site   # static export â†’ ../site/ (GitHub Pages artifact)
+npm run site         # live language site Ã¢â€ â€™ http://localhost:8090
+npm run build:site   # static export Ã¢â€ â€™ ../site/ (GitHub Pages artifact)
 ```
 
 Public Pages URL: [https://theworker02.github.io/nex-lang/](https://theworker02.github.io/nex-lang/)
 
 ---
 
-## Editor extension â€” Nex LSP (Open VSX)
+## Editor extension Ã¢â‚¬â€ Nex LSP (Open VSX)
 
-**Install:** [Nex LSP on Open VSX](https://open-vsx.org/extension/theworker02/nex-lsp) â€” extension id `theworker02.nex-lsp`.
+**Install:** [Nex LSP on Open VSX](https://open-vsx.org/extension/theworker02/nex-lsp) Ã¢â‚¬â€ extension id `theworker02.nex-lsp`.
 
-Works with VS Code, VSCodium, and other Open VSXâ€“compatible editors. Display name **Nex LSP** Â· icon: ribbon N mark (`vscode-nexus/media/logo-256.png`).
+Works with VS Code, VSCodium, and other Open VSXÃ¢â‚¬â€œcompatible editors. Display name **Nex LSP** Ã‚Â· icon: ribbon N mark (`vscode-nexus/media/logo-256.png`).
 
 ```powershell
 cd vscode-nexus
@@ -229,7 +229,7 @@ npm run package          # builds nex-lsp-*.vsix (local / sideload install)
 
 CI publishes **Nex LSP** to Open VSX on **GitHub Release** (or `workflow_dispatch` with confirm=`publish`) via [`.github/workflows/openvsx.yml`](.github/workflows/openvsx.yml).
 
-**Configure later (maintainers):** add repository secret `OVSX_PAT` â€” create a token at [open-vsx.org/user-settings/tokens](https://open-vsx.org/user-settings/tokens) and store it under GitHub â†’ Settings â†’ Secrets. Until that secret is set, CI still packages the VSIX but skips the publish step. You do not need `OVSX_PAT` to develop or contribute.
+**Configure later (maintainers):** add repository secret `OVSX_PAT` Ã¢â‚¬â€ create a token at [open-vsx.org/user-settings/tokens](https://open-vsx.org/user-settings/tokens) and store it under GitHub Ã¢â€ â€™ Settings Ã¢â€ â€™ Secrets. Until that secret is set, CI still packages the VSIX but skips the publish step. You do not need `OVSX_PAT` to develop or contribute.
 
 ---
 
@@ -247,7 +247,7 @@ Configured in [`.github/FUNDING.yml`](.github/FUNDING.yml) (`github` + `thanks_d
 ```powershell
 cd vscode-nexus
 npm run compile
-npm run registry   # requires sibling ../nex-registry â€” not published with nex-lang
+npm run registry   # requires sibling ../nex-registry Ã¢â‚¬â€ not published with nex-lang
 ```
 
 | Mode | How | Notes |
@@ -266,16 +266,16 @@ Package client docs: [`vscode-nexus/docs/packages.md`](vscode-nexus/docs/package
 | [vscode-nexus/docs/README.md](vscode-nexus/docs/README.md) | **Primary docs hub** |
 | [Getting started](vscode-nexus/docs/getting-started.md) | Install, run, REPL, tests, editor |
 | [Language overview](vscode-nexus/docs/language/overview.md) | What Nexus is today |
-| [Syntax](vscode-nexus/docs/language/syntax.md) Â· [Types](vscode-nexus/docs/language/types.md) Â· [Control](vscode-nexus/docs/language/control-flow.md) Â· [Functions](vscode-nexus/docs/language/functions.md) Â· [Modules](vscode-nexus/docs/language/modules.md) Â· [Match](vscode-nexus/docs/language/match.md) | Language reference |
-| [Builtins](vscode-nexus/docs/builtins.md) Â· [Stdlib](vscode-nexus/docs/stdlib.md) | Runtime surface |
+| [Syntax](vscode-nexus/docs/language/syntax.md) Ã‚Â· [Types](vscode-nexus/docs/language/types.md) Ã‚Â· [Control](vscode-nexus/docs/language/control-flow.md) Ã‚Â· [Functions](vscode-nexus/docs/language/functions.md) Ã‚Â· [Modules](vscode-nexus/docs/language/modules.md) Ã‚Â· [Match](vscode-nexus/docs/language/match.md) | Language reference |
+| [Builtins](vscode-nexus/docs/builtins.md) Ã‚Â· [Stdlib](vscode-nexus/docs/stdlib.md) | Runtime surface |
 | [Toolchain](vscode-nexus/docs/toolchain.md) | Engines, CLI, WASM/LLVM, settings |
 | [Self-hosting](vscode-nexus/docs/selfhosting.md) | Bootstrap status & subset |
-| [Packages](vscode-nexus/docs/packages.md) Â· [Website apps](vscode-nexus/docs/website.md) | Registry & HTTP |
-| [Design language](vscode-nexus/docs/design/README.md) | Themes â†’ HTML/CSS |
+| [Packages](vscode-nexus/docs/packages.md) Ã‚Â· [Website apps](vscode-nexus/docs/website.md) | Registry & HTTP |
+| [Design language](vscode-nexus/docs/design/README.md) | Themes Ã¢â€ â€™ HTML/CSS |
 | [Examples](vscode-nexus/docs/examples.md) | Demo index |
 | [Language site / Pages](vscode-nexus/docs/site.md) | Self-host homepage + GitHub Pages |
-| [SECURITY.md](SECURITY.md) Â· [PRIVACY.md](PRIVACY.md) Â· [TERMS.md](TERMS.md) | Trust / legal |
-| [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) Â· [CONTRIBUTING.md](CONTRIBUTING.md) Â· [SUPPORT.md](SUPPORT.md) | Community |
+| [SECURITY.md](SECURITY.md) Ã‚Â· [PRIVACY.md](PRIVACY.md) Ã‚Â· [TERMS.md](TERMS.md) | Trust / legal |
+| [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) Ã‚Â· [CONTRIBUTING.md](CONTRIBUTING.md) Ã‚Â· [SUPPORT.md](SUPPORT.md) | Community |
 | [docs/spec.md](docs/spec.md) | Implemented surface (TS-first) |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Near-term priorities |
 
@@ -292,7 +292,7 @@ cd vscode-nexus && npm run docs   # prints absolute path to docs/
 | `vscode-nexus/examples/` | Modules, VM, selfhost, language demos |
 | `vscode-nexus/examples/site/` | Language homepage (`npm run site` / `npm run build:site`) |
 | `examples/` | Shared root demos (also usable from Go CLI) |
-| `tests/` Â· `vscode-nexus/tests/` | `*_test.nex` / language tests |
+| `tests/` Ã‚Â· `vscode-nexus/tests/` | `*_test.nex` / language tests |
 
 ---
 
@@ -302,7 +302,7 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup, PR expectations, and maintai
 
 1. Prefer changes in **`vscode-nexus/`** (TS is the supported path).
 2. `npm install && npm run compile && npm run smoke && npm run test:nex`
-3. Keep docs honest â€” document implemented behavior; call out subsets and stubs.
+3. Keep docs honest Ã¢â‚¬â€ document implemented behavior; call out subsets and stubs.
 4. Follow the [Code of Conduct](CODE_OF_CONDUCT.md). Questions: [SUPPORT.md](SUPPORT.md).
 
 ---
@@ -324,7 +324,7 @@ Site mirrors: [/privacy](https://theworker02.github.io/nex-lang/privacy/), [/sec
 
 ## License
 
-**Source-available proprietary** — evaluation under [LICENSE](./LICENSE); commercial / production use via [COMMERCIAL.md](./COMMERCIAL.md). See [LICENSE_TRANSITION_NOTICE.md](./LICENSE_TRANSITION_NOTICE.md) and [NOTICE](./NOTICE).
+**Source-available proprietary** â€” evaluation under [LICENSE](./LICENSE); commercial / production use via [COMMERCIAL.md](./COMMERCIAL.md). See [LICENSE_TRANSITION_NOTICE.md](./LICENSE_TRANSITION_NOTICE.md) and [NOTICE](./NOTICE).
 
 
 ---
@@ -332,3 +332,7 @@ Site mirrors: [/privacy](https://theworker02.github.io/nex-lang/privacy/), [/sec
 ## License & acquisition
 
 This project is **proprietary**. Production use, redistribution, and commercial deployment require a written commercial license or completed acquisition. See [LICENSE](./LICENSE) and [ACQUISITION.md](./ACQUISITION.md). Contact [@theworker02](https://github.com/theworker02).
+
+## Acquisition diligence
+
+Buyer-facing diligence materials live in [docs/acquisition/](./docs/acquisition/). Commercial licensing contact path: [COMMERCIAL.md](./COMMERCIAL.md).
