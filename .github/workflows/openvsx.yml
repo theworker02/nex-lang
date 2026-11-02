@@ -83,4 +83,11 @@ jobs:
       - name: Publish Nex LSP to Open VSX
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
-        run: npx ovsx publish "*.vsix" --pat "$OVSX_PAT"
+        run: |
+          shopt -s nullglob
+          vsix_files=(./*.vsix)
+          if [ "${#vsix_files[@]}" -ne 1 ]; then
+            echo "::error::Expected exactly one VSIX in vscode-nexus, found ${#vsix_files[@]}"
+            exit 1
+          fi
+          npx ovsx publish "${vsix_files[0]}" --pat "$OVSX_PAT"
